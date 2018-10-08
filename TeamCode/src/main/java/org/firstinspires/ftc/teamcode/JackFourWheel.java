@@ -63,7 +63,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 @TeleOp(name = "RagBot 3.0 4-Wheel Drive", group = "Cyber Scots")
 @Disabled
-public class FourWheelDrive extends LinearOpMode {
+public class JackFourWheel extends LinearOpMode {
     double CLAW_POS = 0;
     // Define class members
 
@@ -73,10 +73,10 @@ public class FourWheelDrive extends LinearOpMode {
 
     static final long CYCLE_MS = 25;
 
-    public DcMotor frontLeftDrive   = null;
-    public DcMotor frontRightDrive   = null;
-    public DcMotor backLeftDrive   = null;
-    public DcMotor backRightDrive   = null;
+    public DcMotor frontLeftDrive = null;
+    public DcMotor frontRightDrive = null;
+    public DcMotor backLeftDrive = null;
+    public DcMotor backRightDrive = null;
     public DcMotor arm   = null;
     public Servo hook = null;
     double motorPowerL = 0;
@@ -94,36 +94,6 @@ public class FourWheelDrive extends LinearOpMode {
 
     //@Override
     public void runOpMode() {
-
-        /*
-
-          _____                    _____                    _____                    _____                   _______               _____
-         /\    \                  /\    \                  /\    \                  /\    \                 /::\    \             /\    \
-        /::\    \                /::\    \                /::\    \                /::\    \               /::::\    \           /::\    \
-       /::::\    \              /::::\    \              /::::\    \              /::::\    \             /::::::\    \          \:::\    \
-      /::::::\    \            /::::::\    \            /::::::\    \            /::::::\    \           /::::::::\    \          \:::\    \
-     /:::/\:::\    \          /:::/\:::\    \          /:::/\:::\    \          /:::/\:::\    \         /:::/~~\:::\    \          \:::\    \
-    /:::/__\:::\    \        /:::/__\:::\    \        /:::/  \:::\    \        /:::/__\:::\    \       /:::/    \:::\    \          \:::\    \
-   /::::\   \:::\    \      /::::\   \:::\    \      /:::/    \:::\    \      /::::\   \:::\    \     /:::/    / \:::\    \         /::::\    \
-  /::::::\   \:::\    \    /::::::\   \:::\    \    /:::/    / \:::\    \    /::::::\   \:::\    \   /:::/____/   \:::\____\       /::::::\    \
- /:::/\:::\   \:::\____\  /:::/\:::\   \:::\    \  /:::/    /   \:::\ ___\  /:::/\:::\   \:::\ ___\ |:::|    |     |:::|    |     /:::/\:::\    \
-/:::/  \:::\   \:::|    |/:::/  \:::\   \:::\____\/:::/____/  ___\:::|    |/:::/__\:::\   \:::|    ||:::|____|     |:::|    |    /:::/  \:::\____\
-\::/   |::::\  /:::|____|\::/    \:::\  /:::/    /\:::\    \ /\  /:::|____|\:::\   \:::\  /:::|____| \:::\    \   /:::/    /    /:::/    \::/    /
- \/____|:::::\/:::/    /  \/____/ \:::\/:::/    /  \:::\    /::\ \::/    /  \:::\   \:::\/:::/    /   \:::\    \ /:::/    /    /:::/    / \/____/
-       |:::::::::/    /            \::::::/    /    \:::\   \:::\ \/____/    \:::\   \::::::/    /     \:::\    /:::/    /    /:::/    /
-       |::|\::::/    /              \::::/    /      \:::\   \:::\____\       \:::\   \::::/    /       \:::\__/:::/    /    /:::/    /
-       |::| \::/____/               /:::/    /        \:::\  /:::/    /        \:::\  /:::/    /         \::::::::/    /     \::/    /
-       |::|  ~|                    /:::/    /          \:::\/:::/    /          \:::\/:::/    /           \::::::/    /       \/____/
-       |::|   |                   /:::/    /            \::::::/    /            \::::::/    /             \::::/    /
-       \::|   |                  /:::/    /              \::::/    /              \::::/    /               \::/____/
-        \:|   |                  \::/    /                \::/____/                \::/____/                 ~~
-         \|___|                   \/____/                                           ~~
-
-
-        */
-
-        // Connect to servo (Assume PushBot Left Hand)
-        // Change the text in quotes to match any servo name on your robot.
         backLeftDrive  = hardwareMap.get(DcMotor.class, "back-left");
         backRightDrive = hardwareMap.get(DcMotor.class, "back-right");
         frontLeftDrive  = hardwareMap.get(DcMotor.class, "front-left");
@@ -139,14 +109,7 @@ public class FourWheelDrive extends LinearOpMode {
         hook.setPosition(0.5);
         // Wait for the start button0
 
-        telemetry.addData(">", "Press Start to use Zorb's awesome drive for the Ragbot" );
-        telemetry.addData(">", " ______    _______  _______  _______  _______  _______    _______        _______ " );
-        telemetry.addData(">", "|    _ |  |   _   ||       ||  _    ||       ||       |  |       |      |  _    |" );
-        telemetry.addData(">", "|   | ||  |  |_|  ||    ___|| |_|   ||   _   ||_     _|  |___    |      | | |   |" );
-        telemetry.addData(">", "|   |_||_ |       ||   | __ |       ||  | |  |  |   |     ___|   |      | | |   |" );
-        telemetry.addData(">", "|    __  ||       ||   ||  ||  _   | |  |_|  |  |   |    |___    | ___  | |_|   |" );
-        telemetry.addData(">", "|   |  | ||   _   ||   |_| || |_|   ||       |  |   |     ___|   ||   | |       |" );
-        telemetry.addData(">", "|___|  |_||__| |__||_______||_______||_______|  |___|    |_______||___| |_______|" );
+        telemetry.addData(">", "Press Start to Start, duh" );
         telemetry.update();
         waitForStart();
 
@@ -192,7 +155,7 @@ public class FourWheelDrive extends LinearOpMode {
 
 
             // Display the current value
-            telemetry.addData(">", "Press Stop to end Zorb's epic drive." );
+            telemetry.addData(">", "Press Stop to Stop, double duh" );
             telemetry.update();
 
             // Set the servo to the new position and pause;
