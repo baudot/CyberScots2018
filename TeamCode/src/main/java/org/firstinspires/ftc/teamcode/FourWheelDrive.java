@@ -62,33 +62,32 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @TeleOp(name = "RagBot 3.0 4-Wheel Drive", group = "Cyber Scots")
-@Disabled
+//@Disabled
 public class FourWheelDrive extends LinearOpMode {
-    double CLAW_POS = 0;
     // Define class members
 
-    static final int EXPONENT = 5;
-    static final double     FORWARD_SPEED = 0.5;
-    static final double     TURN_SPEED    = 0.25;
+    static final int EXPONENT = 5; //Exponent for exponential drive, higher = more fine control but harder to do medium speed
+    static final double     FORWARD_SPEED = 0.5; //How fast the robot moves forward, obviously
+    static final double     TURN_SPEED    = 0.25; //How fast the robot turns, obviously
 
-    static final long CYCLE_MS = 25;
+    static final long CYCLE_MS = 25; //Cycle time, in milliseconds, of the opmode. The input updates every cycle.
 
     public DcMotor frontLeftDrive   = null;
     public DcMotor frontRightDrive   = null;
     public DcMotor backLeftDrive   = null;
-    public DcMotor backRightDrive   = null;
-    public DcMotor arm   = null;
-    public Servo hook = null;
+    public DcMotor backRightDrive   = null;  //All 4 drive motors
+    public DcMotor arm   = null; //The motor that lifts the arm
+    public Servo hook = null; //The servo that hooks on to the lander
     double  motorPowerL = 0;
-    double motorPowerR = 0;
+    double motorPowerR = 0; //Power, from -1 to 1, to the left and right sides of the robot
     double joystickForward = 0;
-    double joystickTurn = 0;
+    double joystickTurn = 0; //How much (from -1 to 1) the robot needs to turn or move
 
-    double motorPower = 0;
-    double hookPos = 0;
+    double motorPower = 0; //Power to the arm motor
+    double hookPos = 0; //Position of the hook servo
 
-    static final double MAX_POS     =  1.0;     // Maximum rotational position
-    static final double MIN_POS     =  0.0;     // Minimum rotational position
+    static final double MAX_POS     =  1.0;     // Maximum rotational position of the hook
+    static final double MIN_POS     =  0.0;     // Minimum rotational position of the hook
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -129,14 +128,14 @@ public class FourWheelDrive extends LinearOpMode {
         frontLeftDrive  = hardwareMap.get(DcMotor.class, "front-left");
         backLeftDrive = hardwareMap.get(DcMotor.class, "front-right");
         arm  = hardwareMap.get(DcMotor.class, "arm");
-        hook  = hardwareMap.get(Servo.class, "claw");
+        hook  = hardwareMap.get(Servo.class, "claw");// Set the motors from their configurations
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors //Directions of motors to prevent IT SUCKS JACK HERE
         arm.setDirection(DcMotor.Direction.FORWARD);
-        arm.setPower(0);
-        hook.setPosition(0.5);
+        arm.setPower(0); //Make sure arm is not moving
+        hook.setPosition(0.5); //Set hook to center position
         // Wait for the start button0
 
         telemetry.addData(">", "Press Start to use Zorb's awesome drive for the Ragbot" );
@@ -153,56 +152,54 @@ public class FourWheelDrive extends LinearOpMode {
 
         while(opModeIsActive()){
 
-            motorPower = gamepad1.right_stick_y;
+            motorPower = gamepad1.right_stick_y; //Arm is controlled by right stick y
 
-            if (Math.abs(motorPower) < 0.05) {
+            if (Math.abs(motorPower) < 0.05) { //Dead zone so the arm doesn't just move a little bit always
                 motorPower = 0;
             }
 
-            hookPos += (gamepad1.right_trigger - gamepad1.left_trigger)/4;
-            hookPos = Range.clip(hookPos, MIN_POS, MAX_POS);
-            hook.setPosition(hookPos);
+            hookPos += (gamepad1.right_trigger - gamepad1.left_trigger)/4; //Move the hook based on the triggers
+            hookPos = Range.clip(hookPos, MIN_POS, MAX_POS); //Make sure the hook isn't moving too far
+            hook.setPosition(hookPos); //Actually move the hook
 
             // Display the current value
-            telemetry.addData(">", hookPos);
+            telemetry.addData(">", hookPos); //Display the hook position
             telemetry.update();
 
             // Set the servo to the new position and pause;
 
-            arm.setPower(motorPower);
+            arm.setPower(motorPower); //Move the arm based on the joystick
 
             joystickForward = gamepad1.left_stick_y;
-            joystickTurn = gamepad1.left_stick_x;
+            joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
 
             if (Math.abs(joystickForward) < 0.01) {
                 joystickForward = 0;
             }
-            if (Math.abs(joystickTurn) < 0.01) {
+            if (Math.abs(joystickTurn) < 0.01) { //Dead zone
                 joystickTurn = 0;
             }
-            motorPowerL = Math.pow(joystickForward, EXPONENT);
-            motorPowerR =  Math.pow(joystickForward, EXPONENT);
+            motorPowerL = Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
+            motorPowerR =  Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
 
 
             motorPowerL -= Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
-            motorPowerR += Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
+            motorPowerR += Math.pow(joystickTurn, EXPONENT)*TURN_SPEED; //Use speed variables and exponents
 
             motorPowerL = Range.clip(motorPowerL, -1, 1);
-            motorPowerR = Range.clip(motorPowerR, -1, 1);
+            motorPowerR = Range.clip(motorPowerR, -1, 1); //Make sure the motors aren't going faster than they can
 
 
             // Display the current value
             telemetry.addData(">", "Press Stop to end Zorb's epic drive." );
             telemetry.update();
 
-            // Set the servo to the new position and pause;
-
             frontLeftDrive.setPower(motorPowerL);
             frontRightDrive.setPower(motorPowerR);
             backLeftDrive.setPower(motorPowerL);
-            backRightDrive.setPower(motorPowerR);
+            backRightDrive.setPower(motorPowerR); //Set the drive motor power
 
-            sleep(CYCLE_MS);
+            sleep(CYCLE_MS); //Delay until the next cycle
             idle();
         }
 
