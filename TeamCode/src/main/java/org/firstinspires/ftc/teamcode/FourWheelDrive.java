@@ -66,18 +66,17 @@ import com.qualcomm.robotcore.util.Range;
 public class FourWheelDrive extends LinearOpMode {
     // Define class members
 
+    HardwareRagbot         robot   = new HardwareRagbot();   // Use a Ragbot's hardware
+
     static final int EXPONENT = 5; //Exponent for exponential drive, higher = more fine control but harder to do medium speed
     static final double     FORWARD_SPEED = 0.5; //How fast the robot moves forward, obviously
     static final double     TURN_SPEED    = 0.25; //How fast the robot turns, obviously
 
+    static final double MAX_POS     =  1.0;     // Maximum rotational position of the hook
+    static final double MIN_POS     =  0.0;     // Minimum rotational position of the hook
+
     static final long CYCLE_MS = 25; //Cycle time, in milliseconds, of the opmode. The input updates every cycle.
 
-    public DcMotor frontLeftDrive   = null;
-    public DcMotor frontRightDrive   = null;
-    public DcMotor backLeftDrive   = null;
-    public DcMotor backRightDrive   = null;  //All 4 drive motors
-    public DcMotor arm   = null; //The motor that lifts the arm
-    public Servo hook = null; //The servo that hooks on to the lander
     double  motorPowerL = 0;
     double motorPowerR = 0; //Power, from -1 to 1, to the left and right sides of the robot
     double joystickForward = 0;
@@ -86,8 +85,7 @@ public class FourWheelDrive extends LinearOpMode {
     double motorPower = 0; //Power to the arm motor
     double hookPos = 0; //Position of the hook servo
 
-    static final double MAX_POS     =  1.0;     // Maximum rotational position of the hook
-    static final double MIN_POS     =  0.0;     // Minimum rotational position of the hook
+
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -121,22 +119,11 @@ public class FourWheelDrive extends LinearOpMode {
 
         */
 
-        // Connect to servo (Assume PushBot Left Hand)
-        // Change the text in quotes to match any servo name on your robot.
-        backLeftDrive  = hardwareMap.get(DcMotor.class, "back-left");
-        backRightDrive = hardwareMap.get(DcMotor.class, "back-right");
-        frontLeftDrive  = hardwareMap.get(DcMotor.class, "front-left");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "front-right");
-        arm  = hardwareMap.get(DcMotor.class, "arm");
-        hook  = hardwareMap.get(Servo.class, "claw");// Set the motors from their configurations
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors //Directions of motors to prevent IT SUCKS JACK HERE
-        arm.setDirection(DcMotor.Direction.FORWARD);
-        arm.setPower(0); //Make sure arm is not moving
-        hook.setPosition(0.5); //Set hook to center position
-        // Wait for the start button0
+        /*
+         * Initialize the drive system variables.
+         * The init() method of the hardware class does all the work here
+         */
+        robot.init(hardwareMap);
 
         telemetry.addData(">", "Press Start to use Zorb's awesome drive for the Ragbot" );
         telemetry.addData(">", " ______    _______  _______  _______  _______  _______    _______        _______ " );
@@ -160,7 +147,7 @@ public class FourWheelDrive extends LinearOpMode {
 
             hookPos += (gamepad1.right_trigger - gamepad1.left_trigger)/4; //Move the hook based on the triggers
             hookPos = Range.clip(hookPos, MIN_POS, MAX_POS); //Make sure the hook isn't moving too far
-            hook.setPosition(hookPos); //Actually move the hook
+            robot.hook.setPosition(hookPos); //Actually move the hook
 
             // Display the current value
             telemetry.addData(">", hookPos); //Display the hook position
@@ -168,7 +155,7 @@ public class FourWheelDrive extends LinearOpMode {
 
             // Set the servo to the new position and pause;
 
-            arm.setPower(motorPower); //Move the arm based on the joystick
+            robot.arm.setPower(motorPower); //Move the arm based on the joystick
 
             joystickForward = gamepad1.left_stick_y;
             joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
@@ -194,10 +181,10 @@ public class FourWheelDrive extends LinearOpMode {
             telemetry.addData(">", "Press Stop to end Zorb's epic drive." );
             telemetry.update();
 
-            frontLeftDrive.setPower(motorPowerL);
-            frontRightDrive.setPower(motorPowerR);
-            backLeftDrive.setPower(motorPowerL);
-            backRightDrive.setPower(motorPowerR); //Set the drive motor power
+            robot.frontLeftDrive.setPower(motorPowerL);
+            robot.frontRightDrive.setPower(motorPowerR);
+            robot.backLeftDrive.setPower(motorPowerL);
+            robot.backRightDrive.setPower(motorPowerR); //Set the drive motor power
 
             sleep(CYCLE_MS); //Delay until the next cycle
             idle();
