@@ -137,8 +137,8 @@ public class RagbotDriveByVuforia extends LinearOpMode {
         double rightPower = forward;
         leftPower += turn;
         rightPower -= turn;
-        leftPower = Range.clip(leftPower, 0, 1);
-        rightPower = Range.clip(rightPower, 0, 1);
+        leftPower = Range.clip(leftPower, -1, 1);
+        rightPower = Range.clip(rightPower, -1, 1);
 
         robot.frontLeftDrive.setPower(leftPower);
         robot.backLeftDrive.setPower(leftPower);
