@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
+//Jack when someone changes this code: https://www.youtube.com/watch?v=cE1FrqheQNI
+
 @Autonomous(name = "Sampling Test", group = "Cyber Scots")
 @Disabled
 public class sampling extends LinearOpMode {
