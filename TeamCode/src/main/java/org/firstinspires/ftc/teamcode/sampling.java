@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
+//Jack when someone changes this code: https://www.youtube.com/watch?v=cE1FrqheQNI
+
 @Autonomous(name = "Sampling Test", group = "Cyber Scots")
 @Disabled
 public class sampling extends LinearOpMode {
@@ -16,11 +18,10 @@ public class sampling extends LinearOpMode {
     public Servo whipSide = null;
     static final double WHIP_UP_POSITION = 0;
     static final double WHIP_DOWN_POSITION = 0.5;
-    static final double WHIP_WHACK_POSITION = 0.05;
+    static final double WHIP_WHACK_POSITION = 0.4;
     static final double NO_WHACK_POSITION = 0;
 
-    public void sampling() {
-        // Unfold the jewel whip
+    public void sampling() {// Unfold the jewel whip
         whipUp.setPosition(WHIP_DOWN_POSITION);
 
         // Find the cube

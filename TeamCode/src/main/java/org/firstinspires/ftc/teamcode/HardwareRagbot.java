@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -43,11 +44,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class HardwareRagbot
 {
     /* Public OpMode members. */
+    public DigitalChannel button = null;  // Device Object
     public DcMotor frontLeftDrive   = null;
     public DcMotor frontRightDrive   = null;
     public DcMotor backLeftDrive   = null;
     public DcMotor backRightDrive   = null;  //All 4 drive motors
-    public DcMotor arm   = null; //The motor that lifts the arm
+    public DcMotor armL   = null; //The motor that lifts the arm
+    public DcMotor armR  = null; //The motor that lifts the arm
     public Servo hook = null; //The servo that hooks on to the lander
 
     //public static final double MID_SERVO       =  0.5 ;
@@ -72,20 +75,26 @@ public class HardwareRagbot
         backRightDrive = hardwareMap.get(DcMotor.class, "back-right");
         frontLeftDrive  = hardwareMap.get(DcMotor.class, "front-left");
         backLeftDrive = hardwareMap.get(DcMotor.class, "front-right");
-        arm  = hardwareMap.get(DcMotor.class, "arm");
+        armL  = hardwareMap.get(DcMotor.class, "arml");
+        armR  = hardwareMap.get(DcMotor.class, "armr");
+        button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors //Directions of motors to prevent IT SUCKS JACK HERE
-        arm.setDirection(DcMotor.Direction.FORWARD);
+        armL.setDirection(DcMotor.Direction.FORWARD);
+        armR.setDirection(DcMotor.Direction.REVERSE);
+
+        button.setMode(DigitalChannel.Mode.INPUT);
 
         // Set all motors to zero power
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
         backLeftDrive.setPower(0);
         backRightDrive.setPower(0);
-        arm.setPower(0);
+        armL.setPower(0);
+        armR.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -93,8 +102,8 @@ public class HardwareRagbot
         frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        armL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         // Define and initialize ALL installed servos.

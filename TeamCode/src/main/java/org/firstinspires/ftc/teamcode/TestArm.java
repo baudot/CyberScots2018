@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
@@ -49,16 +50,19 @@ public class TestArm extends LinearOpMode {
     static final double MIN_POS     =  0.0;     // Minimum rotational position
     double hookPos = 0;
 
-    public DcMotor arm   = null;
+    public DcMotor armL   = null;
+    public DcMotor armR   = null;
     public Servo hookServo = null;
     double motorPower = 0;
 
     //@Override
     public void runOpMode() {
 
-        arm  = hardwareMap.get(DcMotor.class, "arm"); //motor to lift the arm
+        armL  = hardwareMap.get(DcMotor.class, "arml"); //motor to lift the arm
+        armR  = hardwareMap.get(DcMotor.class, "armr"); //motor to lift the arm
         hookServo  = hardwareMap.get(Servo.class, "hook");
-        arm.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        armL.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        armR.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         hookServo.setPosition(0.5);
         // Wait for the start button
         telemetry.addData(">", "Press Start to begin test." );
@@ -79,16 +83,16 @@ public class TestArm extends LinearOpMode {
             hookServo.setPosition(hookPos);
 
             // Display the current value
-            telemetry.addData(">", hookPos);
+            telemetry.addData(">", hookPos );
             telemetry.update();
 
             // Set the servo to the new position and pause;
 
-            arm.setPower(motorPower);
+            armL.setPower(motorPower);
+            armR.setPower(motorPower);
             sleep(CYCLE_MS);
             idle();
         }
-
         // Signal done;
         telemetry.addData(">", "Done");
         telemetry.update();

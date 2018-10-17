@@ -155,7 +155,12 @@ public class FourWheelDrive extends LinearOpMode {
 
             // Set the servo to the new position and pause;
 
-            robot.arm.setPower(motorPower); //Move the arm based on the joystick
+            if (robot.button.getState() && motorPower < 0) {
+                motorPower = 0;
+            }
+
+            robot.armL.setPower(motorPower); //Move the arm based on the joystick
+            robot.armR.setPower(motorPower); //Move the arm based on the joystick
 
             joystickForward = gamepad1.left_stick_y;
             joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
