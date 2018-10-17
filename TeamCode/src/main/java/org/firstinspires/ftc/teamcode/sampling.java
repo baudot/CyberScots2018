@@ -18,12 +18,10 @@ public class sampling extends LinearOpMode {
     public Servo whipSide = null;
     static final double WHIP_UP_POSITION = 0;
     static final double WHIP_DOWN_POSITION = 0.5;
-    static final double WHIP_WHACK_POSITION = 0.4;
-    static final double NO_WHACK_POSITION = 0;
+    double whipWhackPosition = 0.2;
+    double noWhackPosition = 0;
 
-    public void sampling() {// Unfold the jewel whip
-        whipUp.setPosition(WHIP_DOWN_POSITION);
-
+    public void sampling() {
         // Find the cube
         ColorSensor colorSensor;
         colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
@@ -31,42 +29,40 @@ public class sampling extends LinearOpMode {
         telemetry.addData("Green", colorSensor.green());
         telemetry.addData("Blue ", colorSensor.blue());
         colorSensor.enableLed(true);
+
+        // Unfold the jewel whip
+        whipUp.setPosition(WHIP_DOWN_POSITION);
+
         if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
             // Knock off the cube once it has been found
-            whipSide.setPosition(WHIP_WHACK_POSITION);
-            whipSide.setPosition(NO_WHACK_POSITION);
+            whipSide.setPosition(whipWhackPosition);
+            whipSide.setPosition(noWhackPosition);
         } else {
             whipUp.setPosition(WHIP_UP_POSITION);
-            whipSide.setPosition(0.2);
+            whipWhackPosition = whipWhackPosition + 0.2;
+            noWhackPosition = noWhackPosition + 0.2;
             if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
                 // Knock off the cube once it has been found
-                whipSide.setPosition(WHIP_WHACK_POSITION + 0.2);
-                whipSide.setPosition(NO_WHACK_POSITION + 0.2);
+                whipUp.setPosition(WHIP_DOWN_POSITION);
+                whipSide.setPosition(whipWhackPosition);
+                whipSide.setPosition(noWhackPosition);
+                whipUp.setPosition(WHIP_UP_POSITION);
             } else {
                 whipUp.setPosition(WHIP_UP_POSITION);
-                whipSide.setPosition(0.4);
+                whipWhackPosition = whipWhackPosition + 0.2;
+                noWhackPosition = noWhackPosition + 0.2;
                 if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
                     // Knock off the cube once it has been found
-                    whipSide.setPosition(WHIP_WHACK_POSITION + 0.4);
-                    whipSide.setPosition(NO_WHACK_POSITION + 0.4);
-                } else {
+                    whipUp.setPosition(WHIP_DOWN_POSITION);
+                    whipSide.setPosition(whipWhackPosition);
+                    whipSide.setPosition(noWhackPosition);
                     whipUp.setPosition(WHIP_UP_POSITION);
-                    whipSide.setPosition(0.6);
-                    if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
-                        // Knock off the cube once it has been found
-                        whipSide.setPosition(WHIP_WHACK_POSITION + 0.6);
-                        whipSide.setPosition(NO_WHACK_POSITION + 0.6);
-                    } else {
-                        telemetry.addData("Error", "Whoops. Can't find the cube dudes. ERROR.");
-                    }
                 }
             }
         }
-        whipUp.setPosition(WHIP_UP_POSITION);
     }
-    // Refold the jewel whip (Once the cube has been knocked off)
+
     public void runOpMode() {
-        telemetry.addData("Status", "Initialized");
         sampling();
     }
 }
