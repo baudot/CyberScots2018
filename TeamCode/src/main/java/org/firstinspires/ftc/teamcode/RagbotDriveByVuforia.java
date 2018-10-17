@@ -93,45 +93,10 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 @TeleOp(name="Concept: Vuforia Rover Nav", group ="Concept")
-@Disabled
+//@Disabled
 public class RagbotDriveByVuforia extends LinearOpMode {
-
-    /*
-     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
-     * web site at https://developer.vuforia.com/license-manager.
-     *
-     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
-     * random data. As an example, here is a example of a fragment of a valid key:
-     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-     * Once you've obtained a license key, copy the string from the Vuforia web site
-     * and paste it in to your code on the next line, between the double quotes.
-     */
-
-    HardwareRagbot         robot   = new HardwareRagbot();   // Use a Ragbot's hardware
-
-    private static final String VUFORIA_KEY = "AcRNMjL/////AAAAGYx9swjI4EM3gOz2yIkuui5Eo0LMsIsAxmD+X+Lz2Eox41tmaut+zNhNGm68NGyXSnmYIwcWSIVz/fOZf+ht++8XJScyjQv/BDbKKOOEZ3//KzhxFkS93SlQ3OKX+KhDdtv/USecJsSYAMY/A77pOHu10H6SXHGC2fTuCa1+mzp6rEpugFFC0JxcTJSyFTx3IMvH4BPU98zZbTbb8bnVl1usz84xusFUTKGua19+lvZ1gBwfe/SltwgQZEmzTrQPT7K8cnu0obpmxspet8k5FHbqeJvzXV9PMK1wd2+wYygYQMeJCOrg/ZIE/fRODW4sgDIt6L85XMehoidJ3aE2csreAsiSaQsFgnYe4H07XwDi";
-
-    // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
-    // We will define some constants and conversions here
-    private static final float mmPerInch        = 25.4f;
-    private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
-    private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
-
-    // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.
-    // Valid choices are:  BACK or FRONT
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-
-    private OpenGLMatrix lastLocation = null;
-    private boolean targetVisible = false;
-
-    /**
-     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
-     * localization engine.
-     */
-    VuforiaLocalizer vuforia;
-
+    private List<VuforiaTrackable> allTrackables;
+/*
     public void move(double forward, double turn) {
         double leftPower = forward;
         double rightPower = forward;
@@ -144,31 +109,44 @@ public class RagbotDriveByVuforia extends LinearOpMode {
         robot.backLeftDrive.setPower(leftPower);
         robot.frontRightDrive.setPower(rightPower);
         robot.backRightDrive.setPower(rightPower);
-    }
+    }*/
 
-    @Override public void runOpMode() {
+    public void vuforiaInit() {
 
-        robot.init(hardwareMap);
+        String VUFORIA_KEY = "AcRNMjL/////AAAAGYx9swjI4EM3gOz2yIkuui5Eo0LMsIsAxmD+X+Lz2Eox41tmaut+zNhNGm68NGyXSnmYIwcWSIVz/fOZf+ht++8XJScyjQv/BDbKKOOEZ3//KzhxFkS93SlQ3OKX+KhDdtv/USecJsSYAMY/A77pOHu10H6SXHGC2fTuCa1+mzp6rEpugFFC0JxcTJSyFTx3IMvH4BPU98zZbTbb8bnVl1usz84xusFUTKGua19+lvZ1gBwfe/SltwgQZEmzTrQPT7K8cnu0obpmxspet8k5FHbqeJvzXV9PMK1wd2+wYygYQMeJCOrg/ZIE/fRODW4sgDIt6L85XMehoidJ3aE2csreAsiSaQsFgnYe4H07XwDi";
 
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
-         * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
+        // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
+        // We will define some constants and conversions here
+        float mmPerInch = 25.4f;
+        float mmFTCFieldWidth = (12 * 6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
+        float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
+
+        // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.
+        // Valid choices are:  BACK or FRONT
+        final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+
+        boolean targetVisible = false;
+
+        /**
+         * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+         * localization engine.
          */
+
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
-        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY ;
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraDirection   = CAMERA_CHOICE;
 
+
+        VuforiaLocalizer vuforia;
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
         // Load the data sets that for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
-        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
+        VuforiaTrackables targetsRoverRuckus = vuforia.loadTrackablesFromAsset("RoverRuckus");
         VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
         blueRover.setName("Blue-Rover");
         VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
@@ -179,7 +157,7 @@ public class RagbotDriveByVuforia extends LinearOpMode {
         backSpace.setName("Back-Space");
 
         // For convenience, gather together all the trackable objects in one easily-iterable collection */
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables = new ArrayList<VuforiaTrackable>();
         allTrackables.addAll(targetsRoverRuckus);
 
         /**
@@ -286,57 +264,79 @@ public class RagbotDriveByVuforia extends LinearOpMode {
             ((VuforiaTrackableDefaultListener)trackable.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
         }
 
+        targetsRoverRuckus.activate();
+    }
+
+    public LocRot getLocRot() {
+
+        OpenGLMatrix lastLocation = null;
+        // check all the trackable target to see which one (if any) is visible.
+        boolean targetVisible = false;
+        for (VuforiaTrackable trackable : allTrackables) {
+            if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
+                telemetry.addData("Visible Target", trackable.getName());
+                targetVisible = true;
+
+                // getUpdatedRobotLocation() will return null if no new information is available since
+                // the last time that call was made, or if the trackable is not currently visible.
+                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                if (robotLocationTransform != null) {
+                    lastLocation = robotLocationTransform;
+                }
+                break;
+            }
+        }
+
+        // Provide feedback as to where the robot is located (if we know).
+        if (targetVisible) {
+            // express position (translation) of robot in inches.
+            VectorF translation = lastLocation.getTranslation();
+            telemetry.addData("Pos (cm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                    translation.get(0) / 10, translation.get(1) / 10, translation.get(2) / 10);
+
+            // express the rotation of the robot in degrees.
+            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+            telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+            telemetry.update();
+            LocRot lr = new LocRot();
+            lr.location = translation;
+            lr.rotation = rotation;
+
+            return lr;
+        }
+        else {
+            telemetry.addData("Visible Target", "none"); //The target is not visible
+            telemetry.update();
+            return null;
+        }
+
+    }
+
+
+    @Override public void runOpMode() {
+
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
+         * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
+         */
+
+
+        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+
+
         /** Wait for the game to begin */
-        telemetry.addData(">", "Press Play to start tracking");
+        telemetry.addData(">", "Press Play to start");
         telemetry.update();
 
         waitForStart();
 
-        move(0,.5);
-
         /** Start tracking the data sets we care about. */
-        targetsRoverRuckus.activate();
+
         while (opModeIsActive()) {
 
-            // check all the trackable target to see which one (if any) is visible.
-            targetVisible = false;
-            for (VuforiaTrackable trackable : allTrackables) {
-                if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                    telemetry.addData("Visible Target", trackable.getName());
-                    targetVisible = true;
-
-                    // getUpdatedRobotLocation() will return null if no new information is available since
-                    // the last time that call was made, or if the trackable is not currently visible.
-                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                    if (robotLocationTransform != null) {
-                        lastLocation = robotLocationTransform;
-                    }
-                    break;
-                }
-            }
-
-            // Provide feedback as to where the robot is located (if we know).
-            if (targetVisible) {
-                // express position (translation) of robot in inches.
-                VectorF translation = lastLocation.getTranslation();
-                telemetry.addData("Pos (cm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        translation.get(0) / 10, translation.get(1) / 10, translation.get(2) / 10);
-
-                // express the rotation of the robot in degrees.
-                Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-
-                if (rotation.thirdAngle >= 179 && rotation.thirdAngle <= 181) { //Is the robot in position (180 degrees)?
-                    move(0,0);
-                    telemetry.addData("Stopping", "Rotation is ~180 degrees");
-                }else {
-                    //The robot isn't in position but it sees the target
-                }
-            }
-            else {
-                telemetry.addData("Visible Target", "none"); //The target is not visible
-            }
-            telemetry.update();
         }
     }
 }
+
