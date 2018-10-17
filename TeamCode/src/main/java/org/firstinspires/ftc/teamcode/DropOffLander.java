@@ -163,6 +163,7 @@ public class DropOffLander extends LinearOpMode {
             robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
+            //repeated four times, for four wheel drive
             runtime.reset();
             robot.frontLeftDrive.setPower(Math.abs(speed));
             robot.frontRightDrive.setPower(Math.abs(speed));
