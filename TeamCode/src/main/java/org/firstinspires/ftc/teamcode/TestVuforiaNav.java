@@ -29,10 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -92,9 +90,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * is explained below.
  */
 
-@TeleOp(name="Concept: Vuforia Rover Nav", group ="Concept")
+@TeleOp(name="Test Vuforia", group ="Concept")
 //@Disabled
-public class RagbotDriveByVuforia extends LinearOpMode {
+public class TestVuforiaNav extends LinearOpMode {
     private List<VuforiaTrackable> allTrackables;
 /*
     public void move(double forward, double turn) {
@@ -330,12 +328,23 @@ public class RagbotDriveByVuforia extends LinearOpMode {
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
 
+        vuforiaInit();
+
         waitForStart();
 
         /** Start tracking the data sets we care about. */
 
-        while (opModeIsActive()) {
 
+
+
+        while (opModeIsActive()) {
+            telemetry.addData("Roll (deg):", getLocRot().rotation.firstAngle);
+            telemetry.addData("Pitch:", getLocRot().rotation.secondAngle);
+            telemetry.addData("Direction:", getLocRot().rotation.thirdAngle);
+
+            telemetry.addData("X (in):", getLocRot().location.get(0));
+            telemetry.addData("Y:", getLocRot().location.get(1));
+            telemetry.addData("Z:", getLocRot().location.get(2));
         }
     }
 }
