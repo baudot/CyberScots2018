@@ -31,12 +31,13 @@ public class sampling extends LinearOpMode {
         colorSensor.enableLed(true);
 
         // Unfold the jewel whip
-        whipUp.setPosition(WHIP_DOWN_POSITION);
+        whipUp.setPosition(WHIP_UP_POSITION);
 
         if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
             // Knock off the cube once it has been found
             whipSide.setPosition(whipWhackPosition);
             whipSide.setPosition(noWhackPosition);
+            telemetry.addData("Cube", "Found Cube");
         } else {
             whipUp.setPosition(WHIP_UP_POSITION);
             whipWhackPosition = whipWhackPosition + 0.2;
