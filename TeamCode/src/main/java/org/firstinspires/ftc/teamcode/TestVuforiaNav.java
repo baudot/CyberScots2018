@@ -341,13 +341,13 @@ public class TestVuforiaNav extends LinearOpMode {
             LocRot locrot = getLocRot();
 
             if (locrot != null) {
-                telemetry.addData("Roll (deg):", getLocRot().rotation.firstAngle);
-                telemetry.addData("Pitch:", getLocRot().rotation.secondAngle);
-                telemetry.addData("Direction:", getLocRot().rotation.thirdAngle);
+                telemetry.addData("Roll (deg):", locrot.rotation.firstAngle);
+                telemetry.addData("Pitch:", locrot.rotation.secondAngle);
+                telemetry.addData("Direction:", locrot.rotation.thirdAngle);
 
-                telemetry.addData("X (in):", getLocRot().location.get(0));
-                telemetry.addData("Y:", getLocRot().location.get(1));
-                telemetry.addData("Z:", getLocRot().location.get(2));
+                telemetry.addData("X (in):", locrot.location.get(0));
+                telemetry.addData("Y:", locrot.location.get(1));
+                telemetry.addData("Z:", locrot.location.get(2));
             }else {
                 //do stuff
             }
