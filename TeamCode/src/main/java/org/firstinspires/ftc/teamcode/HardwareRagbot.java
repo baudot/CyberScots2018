@@ -78,6 +78,7 @@ public class HardwareRagbot
         armL  = hardwareMap.get(DcMotor.class, "arml");
         armR  = hardwareMap.get(DcMotor.class, "armr");
         button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
+        hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
@@ -106,8 +107,7 @@ public class HardwareRagbot
         armR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        // Define and initialize ALL installed servos.
-        hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
+        // Initialize ALL installed servos.
         hook.setPosition(0.5); //Set hook to center position
     }
  }
