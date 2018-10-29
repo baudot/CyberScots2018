@@ -74,10 +74,10 @@ public class HardwareRagbot
         backLeftDrive  = hardwareMap.get(DcMotor.class, "back-left");
         backRightDrive = hardwareMap.get(DcMotor.class, "back-right");
         frontLeftDrive  = hardwareMap.get(DcMotor.class, "front-left");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "front-right");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front-right");
         armL  = hardwareMap.get(DcMotor.class, "arml");
         armR  = hardwareMap.get(DcMotor.class, "armr");
-        button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
+        //button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
         //hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
@@ -87,7 +87,7 @@ public class HardwareRagbot
         armL.setDirection(DcMotor.Direction.FORWARD);
         armR.setDirection(DcMotor.Direction.REVERSE);
 
-        button.setMode(DigitalChannel.Mode.INPUT);
+        //button.setMode(DigitalChannel.Mode.INPUT);
 
         // Set all motors to zero power
         frontLeftDrive.setPower(0);
