@@ -56,7 +56,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Ragbot: Identify_4_Moters", group="Ragbot")
 public class DropDownCode extends LinearOpMode {
-
     /* Declare OpMode members. */
     HardwareRagbot         robot   = new HardwareRagbot();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
