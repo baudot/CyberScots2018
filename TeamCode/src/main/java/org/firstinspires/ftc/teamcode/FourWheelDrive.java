@@ -136,8 +136,11 @@ public class FourWheelDrive extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-
         while(opModeIsActive()){
+
+            telemetry.addData("arm left", robot.armL.getCurrentPosition());
+
+            telemetry.addData("arm right", robot.armR.getCurrentPosition());
 
             motorPower = gamepad1.right_stick_y; //Arm is controlled by right stick y
 
