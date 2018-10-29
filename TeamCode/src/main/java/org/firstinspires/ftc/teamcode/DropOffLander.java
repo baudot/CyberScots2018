@@ -120,7 +120,7 @@ public class DropOffLander extends LinearOpMode {
         encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
         encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
-        robot.hook.setPosition(0.5);            // S4: Stop and close the claw.
+        //robot.hook.setPosition(0.5);            // S4: Stop and close the claw.
         sleep(1000);     // pause for servos to move
 
         telemetry.addData("Path", "Complete");
