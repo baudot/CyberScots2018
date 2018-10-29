@@ -69,8 +69,8 @@ public class FourWheelDrive extends LinearOpMode {
     HardwareRagbot         robot   = new HardwareRagbot();   // Use a Ragbot's hardware
 
     static final int EXPONENT = 5; //Exponent for exponential drive, higher = more fine control but harder to do medium speed
-    static final double     FORWARD_SPEED = 0.5; //How fast the robot moves forward, obviously
-    static final double     TURN_SPEED    = 0.25; //How fast the robot turns, obviously
+    static final double     FORWARD_SPEED = 0.3; //How fast the robot moves forward, obviously
+    static final double     TURN_SPEED    = 0.3; //How fast the robot turns, obviously
 
     static final double MAX_POS     =  1.0;     // Maximum rotational position of the hook
     static final double MIN_POS     =  0.0;     // Minimum rotational position of the hook
@@ -83,7 +83,7 @@ public class FourWheelDrive extends LinearOpMode {
     double joystickTurn = 0; //How much (from -1 to 1) the robot needs to turn or move
 
     double motorPower = 0; //Power to the arm motor
-    double hookPos = 0; //Position of the hook servo
+    //double hookPos = 0; //Position of the hook servo
 
 
 
@@ -136,8 +136,11 @@ public class FourWheelDrive extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-
         while(opModeIsActive()){
+
+            telemetry.addData("arm left", robot.armL.getCurrentPosition());
+
+            telemetry.addData("arm right", robot.armR.getCurrentPosition());
 
             motorPower = gamepad1.right_stick_y; //Arm is controlled by right stick y
 
@@ -145,19 +148,19 @@ public class FourWheelDrive extends LinearOpMode {
                 motorPower = 0;
             }
 
-            hookPos += (gamepad1.right_trigger - gamepad1.left_trigger)/4; //Move the hook based on the triggers
-            hookPos = Range.clip(hookPos, MIN_POS, MAX_POS); //Make sure the hook isn't moving too far
-            robot.hook.setPosition(hookPos); //Actually move the hook
+            //hookPos += (gamepad1.right_trigger - gamepad1.left_trigger)/4; //Move the hook based on the triggers
+            //hookPos = Range.clip(hookPos, MIN_POS, MAX_POS); //Make sure the hook isn't moving too far
+            //robot.hook.setPosition(hookPos); //Actually move the hook
 
             // Display the current value
-            telemetry.addData(">", hookPos); //Display the hook position
-            telemetry.update();
+            //telemetry.addData(">", hookPos); //Display the hook position
+            //telemetry.update();
 
             // Set the servo to the new position and pause;
 
-            if (robot.button.getState() && motorPower < 0) {
-                motorPower = 0;
-            }
+            //if (robot.button.getState() && motorPower < 0) {
+                //motorPower = 0;
+            //}
 
             robot.armL.setPower(motorPower); //Move the arm based on the joystick
             robot.armR.setPower(motorPower); //Move the arm based on the joystick
@@ -175,8 +178,8 @@ public class FourWheelDrive extends LinearOpMode {
             motorPowerR =  Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
 
 
-            motorPowerL -= Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
-            motorPowerR += Math.pow(joystickTurn, EXPONENT)*TURN_SPEED; //Use speed variables and exponents
+            motorPowerL += Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
+            motorPowerR -= Math.pow(joystickTurn, EXPONENT)*TURN_SPEED; //Use speed variables and exponents
 
             motorPowerL = Range.clip(motorPowerL, -1, 1);
             motorPowerR = Range.clip(motorPowerR, -1, 1); //Make sure the motors aren't going faster than they can

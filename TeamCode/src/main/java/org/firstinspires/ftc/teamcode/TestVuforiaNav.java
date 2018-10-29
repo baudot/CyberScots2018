@@ -51,7 +51,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
-
 /**
  * This 2018-2019 OpMode illustrates the basics of using the Vuforia localizer to determine
  * positioning and orientation of robot on the FTC field.
@@ -272,7 +271,7 @@ public class TestVuforiaNav extends LinearOpMode {
         boolean targetVisible = false;
         for (VuforiaTrackable trackable : allTrackables) {
             if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                telemetry.addData("Visible Target", trackable.getName());
+                //telemetry.addData("Visible Target", trackable.getName());
                 targetVisible = true;
 
                 // getUpdatedRobotLocation() will return null if no new information is available since
@@ -286,15 +285,15 @@ public class TestVuforiaNav extends LinearOpMode {
         }
 
         // Provide feedback as to where the robot is located (if we know).
-        if (targetVisible) {
+        if (targetVisible && lastLocation != null) {
             // express position (translation) of robot in inches.
             VectorF translation = lastLocation.getTranslation();
-            telemetry.addData("Pos (cm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    translation.get(0) / 10, translation.get(1) / 10, translation.get(2) / 10);
+            //telemetry.addData("Pos (cm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+            //        translation.get(0) / 10, translation.get(1) / 10, translation.get(2) / 10);
 
             // express the rotation of the robot in degrees.
             Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-            telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+           // telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
             telemetry.update();
             LocRot lr = new LocRot();
             lr.location = translation;
@@ -303,7 +302,7 @@ public class TestVuforiaNav extends LinearOpMode {
             return lr;
         }
         else {
-            telemetry.addData("Visible Target", "none"); //The target is not visible
+            //telemetry.addData("Visible Target", "none"); //The target is not visible
             telemetry.update();
             return null;
         }
@@ -338,14 +337,23 @@ public class TestVuforiaNav extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            telemetry.addData("Roll (deg):", getLocRot().rotation.firstAngle);
-            telemetry.addData("Pitch:", getLocRot().rotation.secondAngle);
-            telemetry.addData("Direction:", getLocRot().rotation.thirdAngle);
+            LocRot locrot = getLocRot();
+            telemetry.addLine("Getting locrot");
+            if (locrot != null) {
+                telemetry.addLine("Found locrot");
 
-            telemetry.addData("X (in):", getLocRot().location.get(0));
-            telemetry.addData("Y:", getLocRot().location.get(1));
-            telemetry.addData("Z:", getLocRot().location.get(2));
+                telemetry.addData("Roll (deg):", locrot.rotation.firstAngle);
+                telemetry.addData("Pitch:", locrot.rotation.secondAngle);
+                telemetry.addData("Direction:", locrot.rotation.thirdAngle);
+
+                telemetry.addData("X (in):", locrot.location.get(0));
+                telemetry.addData("Y:", locrot.location.get(1));
+                telemetry.addData("Z:", locrot.location.get(2));
+            }else {
+                telemetry.addLine("Cannot get locrot");
+            }
+
+            telemetry.update();
         }
     }
 }
-

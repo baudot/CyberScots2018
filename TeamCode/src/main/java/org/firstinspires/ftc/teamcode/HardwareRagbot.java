@@ -51,7 +51,7 @@ public class HardwareRagbot
     public DcMotor backRightDrive   = null;  //All 4 drive motors
     public DcMotor armL   = null; //The motor that lifts the arm
     public DcMotor armR  = null; //The motor that lifts the arm
-    public Servo hook = null; //The servo that hooks on to the lander
+    //public Servo hook = null; //The servo that hooks on to the lander
 
     //public static final double MID_SERVO       =  0.5 ;
 
@@ -74,11 +74,11 @@ public class HardwareRagbot
         backLeftDrive  = hardwareMap.get(DcMotor.class, "back-left");
         backRightDrive = hardwareMap.get(DcMotor.class, "back-right");
         frontLeftDrive  = hardwareMap.get(DcMotor.class, "front-left");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "front-right");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front-right");
         armL  = hardwareMap.get(DcMotor.class, "arml");
         armR  = hardwareMap.get(DcMotor.class, "armr");
-        button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
-        hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
+        //button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
+        //hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
@@ -87,7 +87,7 @@ public class HardwareRagbot
         armL.setDirection(DcMotor.Direction.FORWARD);
         armR.setDirection(DcMotor.Direction.REVERSE);
 
-        button.setMode(DigitalChannel.Mode.INPUT);
+        //button.setMode(DigitalChannel.Mode.INPUT);
 
         // Set all motors to zero power
         frontLeftDrive.setPower(0);
@@ -99,16 +99,16 @@ public class HardwareRagbot
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         // Initialize ALL installed servos.
-        hook.setPosition(0.5); //Set hook to center position
+        //hook.setPosition(0.5); //Set hook to center position
     }
  }
 

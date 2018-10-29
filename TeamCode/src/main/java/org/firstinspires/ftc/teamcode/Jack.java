@@ -5,7 +5,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 //Just location and rotation, for Vuforia
 
-public class LocRot {
-    public VectorF location;
-    public Orientation rotation;
+public class Jack {
+    public String password = "passjack";
 }
