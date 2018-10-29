@@ -51,7 +51,7 @@ public class HardwareRagbot
     public DcMotor backRightDrive   = null;  //All 4 drive motors
     public DcMotor armL   = null; //The motor that lifts the arm
     public DcMotor armR  = null; //The motor that lifts the arm
-    public Servo hook = null; //The servo that hooks on to the lander
+    //public Servo hook = null; //The servo that hooks on to the lander
 
     //public static final double MID_SERVO       =  0.5 ;
 
@@ -78,7 +78,7 @@ public class HardwareRagbot
         armL  = hardwareMap.get(DcMotor.class, "arml");
         armR  = hardwareMap.get(DcMotor.class, "armr");
         button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
-        hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
+        //hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
@@ -108,7 +108,7 @@ public class HardwareRagbot
 
 
         // Initialize ALL installed servos.
-        hook.setPosition(0.5); //Set hook to center position
+        //hook.setPosition(0.5); //Set hook to center position
     }
  }
 

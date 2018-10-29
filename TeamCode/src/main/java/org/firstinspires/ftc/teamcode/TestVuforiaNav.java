@@ -51,7 +51,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
-
 /**
  * This 2018-2019 OpMode illustrates the basics of using the Vuforia localizer to determine
  * positioning and orientation of robot on the FTC field.
@@ -272,7 +271,7 @@ public class TestVuforiaNav extends LinearOpMode {
         boolean targetVisible = false;
         for (VuforiaTrackable trackable : allTrackables) {
             if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                telemetry.addData("Visible Target", trackable.getName());
+                //telemetry.addData("Visible Target", trackable.getName());
                 targetVisible = true;
 
                 // getUpdatedRobotLocation() will return null if no new information is available since
@@ -286,7 +285,7 @@ public class TestVuforiaNav extends LinearOpMode {
         }
 
         // Provide feedback as to where the robot is located (if we know).
-        if (targetVisible) {
+        if (targetVisible && lastLocation != null) {
             // express position (translation) of robot in inches.
             VectorF translation = lastLocation.getTranslation();
             //telemetry.addData("Pos (cm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
@@ -339,8 +338,10 @@ public class TestVuforiaNav extends LinearOpMode {
 
         while (opModeIsActive()) {
             LocRot locrot = getLocRot();
-
+            telemetry.addLine("Getting locrot");
             if (locrot != null) {
+                telemetry.addLine("Found locrot");
+
                 telemetry.addData("Roll (deg):", locrot.rotation.firstAngle);
                 telemetry.addData("Pitch:", locrot.rotation.secondAngle);
                 telemetry.addData("Direction:", locrot.rotation.thirdAngle);
@@ -349,9 +350,10 @@ public class TestVuforiaNav extends LinearOpMode {
                 telemetry.addData("Y:", locrot.location.get(1));
                 telemetry.addData("Z:", locrot.location.get(2));
             }else {
-                //do stuff
+                telemetry.addLine("Cannot get locrot");
             }
+
+            telemetry.update();
         }
     }
 }
-
