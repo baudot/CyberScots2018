@@ -73,9 +73,12 @@ public class DropOffLander extends LinearOpMode {
 
     static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
+    static final double     ARM_DRIVE_GEAR_REDUCTION    = 6.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
+                                                      (WHEEL_DIAMETER_INCHES * 3.1415926);
+    static final double     COUNTS_PER_DEGREE         = (COUNTS_PER_MOTOR_REV * ARM_DRIVE_GEAR_REDUCTION)
+                                                            / 360;
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
@@ -130,7 +133,7 @@ public class DropOffLander extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        armDrive (0.5, 1.0, 2.0);
+        armDrive (0.5, 30.0, 2.0);
         //encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
         //encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
         //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
@@ -222,7 +225,7 @@ public class DropOffLander extends LinearOpMode {
     }
 
     public void armDrive(double speed,
-                             double inches,
+                             double degrees,
                              double timeoutS) {
         int newarmLTarget;
         int newarmRTarget;
@@ -231,8 +234,8 @@ public class DropOffLander extends LinearOpMode {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            newarmLTarget = robot.armL.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
-            newarmRTarget = robot.armR.getCurrentPosition() + (int)(-inches * COUNTS_PER_INCH);
+            newarmLTarget = robot.armL.getCurrentPosition() + (int)(degrees * COUNTS_PER_DEGREE);
+            newarmRTarget = robot.armR.getCurrentPosition() + (int)(-degrees * COUNTS_PER_DEGREE);
 
             robot.armL.setTargetPosition(newarmLTarget);
             robot.armR.setTargetPosition(newarmRTarget);
