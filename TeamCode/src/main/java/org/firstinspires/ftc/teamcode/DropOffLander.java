@@ -80,6 +80,9 @@ public class DropOffLander extends LinearOpMode {
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
+    int                  current_armL_pos        = 0;
+    int                  current_armR_pos        = 0;
+
     @Override
     public void runOpMode() {
 
@@ -111,14 +114,27 @@ public class DropOffLander extends LinearOpMode {
                 robot.backRightDrive.getCurrentPosition());
         telemetry.update();
 
-        // Wait for the game to start (driver presses PLAY)
+        current_armL_pos = robot.armL.getCurrentPosition());
+        current_armR_pos = robot.armR.getCurrentPosition();
+
+        robot.armL.setTargetPosition(current_armL_pos);
+        robot.armR.setTargetPosition(current_armR_pos);
+
+        robot.armL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.armR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.armL.setPower(0.5);
+        robot.armR.setPower(0.5);
+
+        // Wait for the game to start (driver presses PLAY
         waitForStart();
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+        armDrive (0.5, 1.0, 2.0);
+        //encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        //encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
+        //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
         //robot.hook.setPosition(0.5);            // S4: Stop and close the claw.
         sleep(1000);     // pause for servos to move
@@ -130,7 +146,7 @@ public class DropOffLander extends LinearOpMode {
     /*
      *  Method to perfmorm a relative move, based on encoder counts.
      *  Encoders are not reset as the move is based on the current position.
-     *  Move will stop if any of three conditions occur:
+     *  Move will stop if any of three conditions occur:current_armL_pos
      *  1) Move gets to the desired position
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
@@ -201,6 +217,62 @@ public class DropOffLander extends LinearOpMode {
             robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
+        }
+    }
+
+    public void armDrive(double speed,
+                             double inches,
+                             double timeoutS) {
+        int newarmLTarget;
+        int newarmRTarget;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newarmLTarget = robot.armL.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+            newarmRTarget = robot.armR.getCurrentPosition() + (int)(-inches * COUNTS_PER_INCH);
+
+            robot.armL.setTargetPosition(newarmLTarget);
+            robot.armR.setTargetPosition(newarmRTarget);
+
+            // Turn On RUN_TO_POSITION
+            robot.armL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.armR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            //repeated four times, for four wheel drive
+            runtime.reset();
+            robot.armL.setPower(Math.abs(speed));
+            robot.armR.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.frontLeftDrive.isBusy() && robot.frontRightDrive.isBusy() && robot.backLeftDrive.isBusy() && robot.backRightDrive.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", newarmLTarget,  newarmRTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        robot.armL.getCurrentPosition(),
+                        robot.armR.getCurrentPosition(),
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.armL.setPower(0);
+            robot.armR.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.armL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.armR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             //  sleep(250);   // optional pause after each move
         }
