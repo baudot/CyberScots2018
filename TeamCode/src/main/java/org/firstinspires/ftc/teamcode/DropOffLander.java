@@ -64,8 +64,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Pushbot: Auto Drive By Encoder", group="Pushbot")
-@Disabled
+@Autonomous(name="D.O.L.", group="Ragbot")
 public class DropOffLander extends LinearOpMode {
  
     /* Declare OpMode members. */
@@ -114,7 +113,7 @@ public class DropOffLander extends LinearOpMode {
                 robot.backRightDrive.getCurrentPosition());
         telemetry.update();
 
-        current_armL_pos = robot.armL.getCurrentPosition());
+        current_armL_pos = robot.armL.getCurrentPosition();
         current_armR_pos = robot.armR.getCurrentPosition();
 
         robot.armL.setTargetPosition(current_armL_pos);
@@ -262,7 +261,7 @@ public class DropOffLander extends LinearOpMode {
                 telemetry.addData("Path1",  "Running to %7d :%7d", newarmLTarget,  newarmRTarget);
                 telemetry.addData("Path2",  "Running at %7d :%7d",
                         robot.armL.getCurrentPosition(),
-                        robot.armR.getCurrentPosition(),
+                        robot.armR.getCurrentPosition());
                 telemetry.update();
             }
 
