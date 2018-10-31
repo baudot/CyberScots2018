@@ -130,13 +130,13 @@ public class FourWheelDrive extends LinearOpMode {
         robot.init(hardwareMap);
 
         telemetry.addData(">", "Press Start to use Zorb's awesome drive for the Ragbot" );
-        telemetry.addData(">", " ______    _______  _______  _______  _______  _______    _______        _______ " );
-        telemetry.addData(">", "|    _ |  |   _   ||       ||  _    ||       ||       |  |       |      |  _    |" );
-        telemetry.addData(">", "|   | ||  |  |_|  ||    ___|| |_|   ||   _   ||_     _|  |___    |      | | |   |" );
-        telemetry.addData(">", "|   |_||_ |       ||   | __ |       ||  | |  |  |   |     ___|   |      | | |   |" );
-        telemetry.addData(">", "|    __  ||       ||   ||  ||  _   | |  |_|  |  |   |    |___    | ___  | |_|   |" );
-        telemetry.addData(">", "|   |  | ||   _   ||   |_| || |_|   ||       |  |   |     ___|   ||   | |       |" );
-        telemetry.addData(">", "|___|  |_||__| |__||_______||_______||_______|  |___|    |_______||___| |_______|" );
+        telemetry.addData(">", " ______    _______  _______  _______  _______  _______  " );
+        telemetry.addData(">", "|    _ |  |   _   ||       ||  _    ||       ||       |" );
+        telemetry.addData(">", "|   | ||  |  |_|  ||    ___|| |_|   ||   _   ||_     _|" );
+        telemetry.addData(">", "|   |_||_ |       ||   | __ |       ||  | |  |  |   |" );
+        telemetry.addData(">", "|    __  ||       ||   ||  ||  _   | |  |_|  |  |   |" );
+        telemetry.addData(">", "|   |  | ||   _   ||   |_| || |_|   ||       |  |   |" );
+        telemetry.addData(">", "|___|  |_||__| |__||_______||_______||_______|  |___|" );
         telemetry.update();
         waitForStart();
 
@@ -178,8 +178,8 @@ public class FourWheelDrive extends LinearOpMode {
                 //motorPower = 0;
             //}
 
-            robot.armL.setPower(motorPower); //Move the arm based on the joystick
-            robot.armR.setPower(motorPower); //Move the arm based on the joystick
+            //robot.armL.setPower(motorPower); //Move the arm based on the joystick
+            //robot.armR.setPower(motorPower); //Move the arm based on the joystick
 
             joystickForward = gamepad1.left_stick_y;
             joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
