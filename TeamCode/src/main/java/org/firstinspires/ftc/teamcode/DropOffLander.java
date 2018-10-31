@@ -131,10 +131,10 @@ public class DropOffLander extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        armDrive (FIXTHISLATER!!!)
-        encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+        armDrive (0.5, 1.0, 2.0);
+        //encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        //encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
+        //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
         //robot.hook.setPosition(0.5);            // S4: Stop and close the claw.
         sleep(1000);     // pause for servos to move
@@ -223,7 +223,7 @@ public class DropOffLander extends LinearOpMode {
     }
 
     public void armDrive(double speed,
-                             double leftInches, double rightInches,
+                             double inches,
                              double timeoutS) {
         int newarmLTarget;
         int newarmRTarget;
@@ -232,8 +232,8 @@ public class DropOffLander extends LinearOpMode {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            newarmLTarget = robot.armL.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newarmRTarget = robot.armR.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            newarmLTarget = robot.armL.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+            newarmRTarget = robot.armR.getCurrentPosition() + (int)(-inches * COUNTS_PER_INCH);
 
             robot.armL.setTargetPosition(newarmLTarget);
             robot.armR.setTargetPosition(newarmRTarget);
