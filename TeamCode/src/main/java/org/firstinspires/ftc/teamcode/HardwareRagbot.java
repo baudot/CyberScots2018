@@ -51,6 +51,9 @@ public class HardwareRagbot
     public DcMotor backRightDrive   = null;  //All 4 drive motors
     public DcMotor armL   = null; //The motor that lifts the arm
     public DcMotor armR  = null; //The motor that lifts the arm
+    public DcMotor shoulder; //The "shoulder" of the mineral arm
+    public DcMotor elbow; //The "elbow" of the mineral arm
+    public Servo claw = null; //The claw on the mineral arm
     //public Servo hook = null; //The servo that hooks on to the lander
 
     //public static final double MID_SERVO       =  0.5 ;
@@ -77,8 +80,13 @@ public class HardwareRagbot
         frontRightDrive = hardwareMap.get(DcMotor.class, "front-right");
         armL  = hardwareMap.get(DcMotor.class, "arml");
         armR  = hardwareMap.get(DcMotor.class, "armr");
+        shoulder  = hardwareMap.get(DcMotor.class, "shoulder");
+        elbow  = hardwareMap.get(DcMotor.class, "elbow");
+
         //button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
         //hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
+
+        claw  = hardwareMap.get(Servo.class, "claw");// Set the motors from their configurations
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
@@ -86,6 +94,8 @@ public class HardwareRagbot
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors //Directions of motors to prevent IT SUCKS JACK HERE
         armL.setDirection(DcMotor.Direction.FORWARD);
         armR.setDirection(DcMotor.Direction.REVERSE);
+        shoulder.setDirection(DcMotor.Direction.FORWARD);
+        elbow.setDirection(DcMotor.Direction.REVERSE);
 
         //button.setMode(DigitalChannel.Mode.INPUT);
 
@@ -96,6 +106,8 @@ public class HardwareRagbot
         backRightDrive.setPower(0);
         armL.setPower(0);
         armR.setPower(0);
+        shoulder.setPower(0);
+        elbow.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -105,10 +117,13 @@ public class HardwareRagbot
         backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shoulder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         // Initialize ALL installed servos.
         //hook.setPosition(0.5); //Set hook to center position
+        claw.setPosition(0.5); //Set claw to center position
     }
  }
 
