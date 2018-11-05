@@ -75,6 +75,8 @@ public class FourWheelDrive extends LinearOpMode {
     static final double CLAW_OPEN     =  .5;     // Maximum rotational position of the hook
     static final double CLAW_CLOSED     = .6;     // Minimum rotational position of the hook
 
+    static final double MINERAL_ARM_SPEED = .2;
+
     static final long CYCLE_MS = 25; //Cycle time, in milliseconds, of the opmode. The input updates every cycle.
 
     double  motorPowerL = 0;
@@ -150,9 +152,9 @@ public class FourWheelDrive extends LinearOpMode {
                 clawButtonWasPressed = false;
             }
 
-            robot.shoulder.setPower(gamepad1.right_trigger/2 - gamepad1.left_trigger/2);
+            robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
 
-            robot.elbow.setPower((gamepad1.left_bumper ? 0 : 1) - (gamepad1.right_bumper ? 0 : 1));
+            robot.elbow.setPower((gamepad1.left_bumper ? 0 : MINERAL_ARM_SPEED) - (gamepad1.right_bumper ? 0 : MINERAL_ARM_SPEED));
 
             telemetry.addData("arm left", robot.armL.getCurrentPosition());
 
@@ -178,8 +180,8 @@ public class FourWheelDrive extends LinearOpMode {
                 //motorPower = 0;
             //}
 
-            //robot.armL.setPower(motorPower); //Move the arm based on the joystick
-            //robot.armR.setPower(motorPower); //Move the arm based on the joystick
+            robot.armL.setPower(motorPower); //Move the arm based on the joystick
+            robot.armR.setPower(motorPower); //Move the arm based on the joystick
 
             joystickForward = gamepad1.left_stick_y;
             joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick

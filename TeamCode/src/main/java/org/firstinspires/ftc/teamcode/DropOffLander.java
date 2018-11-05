@@ -108,6 +108,10 @@ public class DropOffLander extends LinearOpMode {
         robot. frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot. backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        telemetry.addData("zero power l:", robot.armL.getZeroPowerBehavior());
+        telemetry.addData("zero power r:", robot.armR.getZeroPowerBehavior());
+        telemetry.update();
+
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0",  "Starting at %7d :%7d",
                 robot.frontLeftDrive.getCurrentPosition(),
