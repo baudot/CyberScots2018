@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 //import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 //import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -47,7 +48,9 @@ import com.qualcomm.robotcore.util.Range;
  *
  * Right stick to move arm
  *
- * Triggers to position hook
+ * Triggers to position shoulder
+ *
+ * Bumpers to position elbow
  *
  * This OpMode scans a single servo back and forwards until Stop is pressed.
  * The code is structured as a LinearOpMode
@@ -68,14 +71,18 @@ public class FourWheelDrive extends LinearOpMode {
 
     HardwareRagbot         robot   = new HardwareRagbot();   // Use a Ragbot's hardware
 
-    static final int EXPONENT = 5; //Exponent for exponential drive, higher = more fine control but harder to do medium speed
+    static final int EXPONENT = 3; //Exponent for exponential drive, higher = more fine control but harder to do medium speed
     static final double     FORWARD_SPEED = 0.3; //How fast the robot moves forward, obviously
-    static final double     TURN_SPEED    = 0.3; //How fast the robot turns, obviously
+    static final double     TURN_SPEED    = 0.5; //How fast the robot turns, obviously
+
+    static final double     LIFTING_FORWARD_SPEED = 0.1; //How fast the robot moves forward, obviously
+    static final double     LIFTING_TURN_SPEED    = 0.1; //How fast the robot turns, obviously
 
     static final double CLAW_OPEN     =  .5;     // Maximum rotational position of the hook
     static final double CLAW_CLOSED     = .6;     // Minimum rotational position of the hook
 
     static final double MINERAL_ARM_SPEED = .2;
+    static final int MINERAL_ENCODER_SPEED = 10;
 
     static final long CYCLE_MS = 25; //Cycle time, in milliseconds, of the opmode. The input updates every cycle.
 
@@ -84,10 +91,18 @@ public class FourWheelDrive extends LinearOpMode {
     double joystickForward = 0;
     double joystickTurn = 0; //How much (from -1 to 1) the robot needs to turn or move
 
+    int shoulderPos = 0;
+
     double motorPower = 0; //Power to the arm motor
 
     boolean clawButtonWasPressed = false;
     boolean clawOpen = false;
+
+    boolean liftingModeButtonWasPressed = false;
+    boolean liftingModeIsActive = false;
+
+    boolean lockArmWasPressed = false;
+    boolean armLocked = false;
 
     //double hookPos = 0; //Position of the hook servo
 
@@ -131,6 +146,12 @@ public class FourWheelDrive extends LinearOpMode {
          */
         robot.init(hardwareMap);
 
+        shoulderPos = robot.shoulder.getCurrentPosition();
+
+        robot.shoulder.setPower(0.5);
+
+        robot.shoulder.setTargetPosition(shoulderPos);
+
         telemetry.addData(">", "Press Start to use Zorb's awesome drive for the Ragbot" );
         telemetry.addData(">", " ______    _______  _______  _______  _______  _______  " );
         telemetry.addData(">", "|    _ |  |   _   ||       ||  _    ||       ||       |" );
@@ -143,6 +164,11 @@ public class FourWheelDrive extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
+            robot.shoulder.setTargetPosition(shoulderPos);
+
+            telemetry.addData("Shoulder Pos: ", shoulderPos);
+
+            telemetry.addData("Motor Pos: ", robot.shoulder.getCurrentPosition());
 
             if (gamepad1.x && !clawButtonWasPressed) {
                 clawButtonWasPressed = true;
@@ -152,20 +178,51 @@ public class FourWheelDrive extends LinearOpMode {
                 clawButtonWasPressed = false;
             }
 
-            robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
+            if (gamepad1.a && !liftingModeButtonWasPressed) {
+                liftingModeButtonWasPressed = true;
+                liftingModeIsActive = !liftingModeIsActive;
+                telemetry.addLine("Lifting Mode");
+            }else if (!gamepad1.a) {
+                liftingModeButtonWasPressed = false;
+                telemetry.addLine("Driving Mode");
+            }
 
-            robot.elbow.setPower((gamepad1.left_bumper ? 0 : MINERAL_ARM_SPEED) - (gamepad1.right_bumper ? 0 : MINERAL_ARM_SPEED));
+            telemetry.addData("Elbow pos: ", robot.elbow.getCurrentPosition());
 
-            telemetry.addData("arm left", robot.armL.getCurrentPosition());
+            telemetry.update();
 
-            telemetry.addData("arm right", robot.armR.getCurrentPosition());
+            if (gamepad1.y && !lockArmWasPressed) {
+                lockArmWasPressed = true;
+                armLocked = !armLocked;
+            }else if (!gamepad1.y) {
+                lockArmWasPressed = false;
+            }
 
-            motorPower = gamepad1.right_stick_y; //Arm is controlled by right stick y
+            if (armLocked) {
+                robot.lockArmInPlace();
+            }else {
+                robot.unlockArm();
+                robot.armL.setPower(motorPower); //Move the arm based on the joystick
+                robot.armR.setPower(motorPower); //Move the arm based on the joystick
+            }
+
+            //robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
+
+            if (!liftingModeIsActive) {
+                shoulderPos += gamepad1.right_trigger * MINERAL_ENCODER_SPEED - gamepad1.left_trigger * MINERAL_ENCODER_SPEED;
+
+                robot.elbow.setPower((gamepad1.left_bumper ? 0 : MINERAL_ARM_SPEED) - (gamepad1.right_bumper ? 0 : MINERAL_ARM_SPEED));
+            }
+
+            //telemetry.addData("arm left", robot.armL.getCurrentPosition());
+
+            //telemetry.addData("arm right", robot.armR.getCurrentPosition());
+
+            motorPower = Math.pow(gamepad1.right_stick_y, EXPONENT); //Arm is controlled by right stick y
 
             if (Math.abs(motorPower) < 0.05) { //Dead zone so the arm doesn't just move a little bit always
                 motorPower = 0;
             }
-
             //hookPos += (gamepad1.right_trigger - gamepad1.left_trigger)/4; //Move the hook based on the triggers
             //hookPos = Range.clip(hookPos, MIN_POS, MAX_POS); //Make sure the hook isn't moving too far
             //robot.hook.setPosition(hookPos); //Actually move the hook
@@ -180,11 +237,16 @@ public class FourWheelDrive extends LinearOpMode {
                 //motorPower = 0;
             //}
 
-            robot.armL.setPower(motorPower); //Move the arm based on the joystick
-            robot.armR.setPower(motorPower); //Move the arm based on the joystick
+
+
 
             joystickForward = gamepad1.left_stick_y;
             joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
+
+            if (liftingModeIsActive) {
+                joystickForward = -joystickForward;
+                //joystickTurn = -joystickTurn;
+            }
 
             if (Math.abs(joystickForward) < 0.01) {
                 joystickForward = 0;
@@ -192,12 +254,21 @@ public class FourWheelDrive extends LinearOpMode {
             if (Math.abs(joystickTurn) < 0.01) { //Dead zone
                 joystickTurn = 0;
             }
-            motorPowerL = Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
-            motorPowerR =  Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
 
+            if (liftingModeIsActive) {
+                motorPowerL = Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
+                motorPowerR =  Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
 
-            motorPowerL += Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
-            motorPowerR -= Math.pow(joystickTurn, EXPONENT)*TURN_SPEED; //Use speed variables and exponents
+                motorPowerL += Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
+                motorPowerR -= Math.pow(joystickTurn, EXPONENT)*TURN_SPEED; //Use speed variables and exponents
+            }else {
+                motorPowerL = Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
+                motorPowerR =  Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
+
+                motorPowerL += Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED;
+                motorPowerR -= Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED; //Use lifting mode speed variables and exponents
+            }
+
 
             motorPowerL = Range.clip(motorPowerL, -1, 1);
             motorPowerR = Range.clip(motorPowerR, -1, 1); //Make sure the motors aren't going faster than they can

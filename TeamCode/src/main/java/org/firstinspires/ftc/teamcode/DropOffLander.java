@@ -85,6 +85,31 @@ public class DropOffLander extends LinearOpMode {
     int                  current_armL_pos        = 0;
     int                  current_armR_pos        = 0;
 
+    public void lockArmInPlace() {
+        robot.armL.setTargetPosition(current_armL_pos);
+        robot.armR.setTargetPosition(current_armR_pos);
+
+        robot.armL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.armR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.armL.setPower(0.5);
+        robot.armR.setPower(0.5);
+    }
+
+    public synchronized void waitForStartWhileHanging() {
+        while (!isStarted()) {
+            lockArmInPlace();
+            synchronized (this) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
+    }
+
     @Override
     public void runOpMode() {
 
@@ -103,37 +128,34 @@ public class DropOffLander extends LinearOpMode {
         robot.frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        robot. frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot. backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot. frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot. backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        robot.armL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        robot.armR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addData("zero power l:", robot.armL.getZeroPowerBehavior());
         telemetry.addData("zero power r:", robot.armR.getZeroPowerBehavior());
         telemetry.update();
 
         // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0",  "Starting at %7d :%7d",
-                robot.frontLeftDrive.getCurrentPosition(),
-                robot.frontRightDrive.getCurrentPosition(),
-                robot.backLeftDrive.getCurrentPosition(),
-                robot.backRightDrive.getCurrentPosition());
-        telemetry.update();
+        //telemetry.addData("Path0",  "Starting at %7d :%7d",
+        //        robot.frontLeftDrive.getCurrentPosition(),
+        //        robot.frontRightDrive.getCurrentPosition(),
+        //        robot.backLeftDrive.getCurrentPosition(),
+        //        robot.backRightDrive.getCurrentPosition());
+        //telemetry.update();
 
         current_armL_pos = robot.armL.getCurrentPosition();
         current_armR_pos = robot.armR.getCurrentPosition();
 
-        robot.armL.setTargetPosition(current_armL_pos);
-        robot.armR.setTargetPosition(current_armR_pos);
 
-        robot.armL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.armR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        robot.armL.setPower(0.5);
-        robot.armR.setPower(0.5);
-
-        // Wait for the game to start (driver presses PLAY
-        waitForStart();
+        // Wait for the game to start (driver presses PLAY)
+        waitForStartWhileHanging();
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
