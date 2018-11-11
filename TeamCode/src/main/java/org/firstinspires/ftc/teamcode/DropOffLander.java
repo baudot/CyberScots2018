@@ -61,7 +61,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 @Autonomous(name="D.O.L.", group="Ragbot")
 public class DropOffLander extends LinearOpMode {
     /* Declare OpMode members. */
-    HardwareRagbot         robot   = new HardwareRagbot();   // Use a Pushbot's hardware
+    HardwareRagbotNoArm         robot   = new HardwareRagbotNoArm();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
