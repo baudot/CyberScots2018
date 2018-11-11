@@ -69,7 +69,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class FourWheelDrive extends LinearOpMode {
     // Define class members
 
-    HardwareRagbot         robot   = new HardwareRagbot();   // Use a Ragbot's hardware
+    HardwareRagbotNoArm         robot   = new HardwareRagbotNoArm();   // Use a Ragbot's hardware
 
     static final int EXPONENT = 3; //Exponent for exponential drive, higher = more fine control but harder to do medium speed
     static final double     FORWARD_SPEED = 0.3; //How fast the robot moves forward, obviously
@@ -90,13 +90,13 @@ public class FourWheelDrive extends LinearOpMode {
     double joystickForward = 0;
     double joystickTurn = 0; //How much (from -1 to 1) the robot needs to turn or move
 
-    int shoulderPos = 0;
-    int elbowPos = 0;
+    //int shoulderPos = 0;
+    //int elbowPos = 0;
 
     double motorPower = 0; //Power to the arm motor
 
-    boolean clawButtonWasPressed = false;
-    boolean clawOpen = true;
+    //boolean clawButtonWasPressed = false;
+    //boolean clawOpen = true;
 
     boolean liftingModeButtonWasPressed = false;
     boolean liftingModeIsActive = false;
@@ -104,8 +104,8 @@ public class FourWheelDrive extends LinearOpMode {
     boolean lockArmWasPressed = false;
     boolean armLocked = false;
 
-    boolean elbowFailed = false;
-    boolean shoulderFailed = false;
+    //boolean elbowFailed = false;
+    //boolean shoulderFailed = false;
 
     //double hookPos = 0; //Position of the hook servo
 
@@ -149,27 +149,27 @@ public class FourWheelDrive extends LinearOpMode {
          */
         robot.init(hardwareMap);
 
-        shoulderPos = robot.shoulder.getCurrentPosition();
-        elbowPos = robot.elbow.getCurrentPosition();
+        //shoulderPos = robot.shoulder.getCurrentPosition();
+        //elbowPos = robot.elbow.getCurrentPosition();
 
-        shoulderFailed = false;
-        elbowFailed = elbowPos == 0;
+        //shoulderFailed = false;
+        //elbowFailed = elbowPos == 0;
 
         //if (shoulderFailed) {
          //   robot.shoulder.setPower(0);
           //  robot.shoulder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //}else {
-            robot.shoulder.setPower(0.5);
+            //robot.shoulder.setPower(0.5);
         //}
 
         //if (elbowFailed) {
-            robot.elbow.setPower(0);
-            robot.elbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //robot.elbow.setPower(0);
+            //robot.elbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //}else {
         //    robot.elbow.setPower(0.5);
         //}
 
-        robot.shoulder.setTargetPosition(shoulderPos);
+        //robot.shoulder.setTargetPosition(shoulderPos);
         //robot.elbow.setTargetPosition(elbowPos);
 
         /*telemetry.addData(">", "Press Start to use Zorb's awesome drive for the Ragbot" );
@@ -182,24 +182,24 @@ public class FourWheelDrive extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            robot.shoulder.setTargetPosition(shoulderPos);
+            //robot.shoulder.setTargetPosition(shoulderPos);
             //robot.elbow.setTargetPosition(elbowPos);
 
-            telemetry.addData("Shoulder target Pos: ", shoulderPos);
+            //telemetry.addData("Shoulder target Pos: ", shoulderPos);
 
-            telemetry.addData("Shoulder actual Pos: ", robot.shoulder.getCurrentPosition());
+            //telemetry.addData("Shoulder actual Pos: ", robot.shoulder.getCurrentPosition());
 
             //telemetry.addData("Elbow target Pos: ", elbowPos);
 
             //telemetry.addData("Elbow actual Pos: ", robot.elbow.getCurrentPosition());
 
-            if (gamepad1.x && !clawButtonWasPressed) {
+            /*if (gamepad1.x && !clawButtonWasPressed) {
                 clawButtonWasPressed = true;
                 clawOpen = !clawOpen;
                 robot.claw.setPosition(clawOpen ? robot.CLAW_CLOSED : robot.CLAW_OPEN);
             }else if (!gamepad1.x) {
                 clawButtonWasPressed = false;
-            }
+            }*/
 
             /*if (elbowFailed && shoulderFailed) {
                 telemetry.addLine("The hardware team has failed");
@@ -249,7 +249,7 @@ public class FourWheelDrive extends LinearOpMode {
 
             //robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
 
-            if (!liftingModeIsActive) {
+            /*if (!liftingModeIsActive) {
                 //if (shoulderFailed) {
                   //  robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
                 //}else {
@@ -269,7 +269,7 @@ public class FourWheelDrive extends LinearOpMode {
                 //}
 
                 //robot.elbow.setPower((gamepad1.left_bumper ? 0 : MINERAL_ARM_SPEED) - (gamepad1.right_bumper ? 0 : MINERAL_ARM_SPEED));
-            }
+            }*/
 
             //telemetry.addData("arm left", robot.armL.getCurrentPosition());
 
@@ -300,7 +300,7 @@ public class FourWheelDrive extends LinearOpMode {
             joystickForward = gamepad1.left_stick_y;
             joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
 
-            if (liftingModeIsActive) {
+            if (!liftingModeIsActive) {
                 joystickForward = -joystickForward;
                 //joystickTurn = -joystickTurn;
             }
