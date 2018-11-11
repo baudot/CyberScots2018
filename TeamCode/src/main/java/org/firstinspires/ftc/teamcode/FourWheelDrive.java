@@ -300,7 +300,7 @@ public class FourWheelDrive extends LinearOpMode {
             joystickForward = gamepad1.left_stick_y;
             joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
 
-            if (liftingModeIsActive) {
+            if (!liftingModeIsActive) {
                 joystickForward = -joystickForward;
                 //joystickTurn = -joystickTurn;
             }
