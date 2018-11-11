@@ -157,8 +157,11 @@ public class DropOffLanderAndDoStuff2 extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        armDrive (0.5, 35.0, 2.0);
+        armDrive (0.5, 30.0, 2.0);
         sleep(2000);
+        robot.armL.setPower(0);
+        robot.armR.setPower(0);
+        encoderDrive(DRIVE_SPEED,-5, -5, 0.25);
         //encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
         //encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
         //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec time
