@@ -48,12 +48,6 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  *  This code ALSO requires that the drive Motors have been configured such that a positive
  *  power command moves them forwards, and causes the encoders to count UP.
  *
- *   The desired path in this example is:
- *   - Drive forward for 48 inches
- *   - Spin right for 12 Inches
- *   - Drive Backwards for 24 inches
- *   - Stop and close the claw.
- *
  *  The code is written using a method called: encoderDrive(speed, leftInches, rightInches, timeoutS)
  *  that performs the actual movement.
  *  This methods assumes that each movement is relative to the last stopping place.
@@ -66,7 +60,6 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 @Autonomous(name="D.O.L.", group="Ragbot")
 public class DropOffLander extends LinearOpMode {
- 
     /* Declare OpMode members. */
     HardwareRagbot         robot   = new HardwareRagbot();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();

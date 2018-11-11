@@ -43,6 +43,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class HardwareRagbot
 {
+
+    static final double CLAW_OPEN     =  0.25;     // Maximum rotational position of the hook
+    static final double CLAW_CLOSED     = 0.35;     // Minimum rotational position of the hook
+
     /* Public OpMode members. */
     public DigitalChannel button = null;  // Device Object
     public DcMotor frontLeftDrive   = null;
@@ -145,7 +149,7 @@ public class HardwareRagbot
         armL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shoulder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        elbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
