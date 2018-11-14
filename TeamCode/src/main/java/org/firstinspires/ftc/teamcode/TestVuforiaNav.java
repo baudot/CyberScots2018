@@ -30,7 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -86,10 +86,10 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  *
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
- * is explained below.
+ *uis explained below.
  */
 
-@TeleOp(name="Test Vuforia", group ="Concept")
+@Autonomous(name="Test Vuforia", group ="Concept")
 //@Disabled
 public class TestVuforiaNav extends LinearOpMode {
     private List<VuforiaTrackable> allTrackables;
@@ -334,13 +334,14 @@ public class TestVuforiaNav extends LinearOpMode {
         /** Start tracking the data sets we care about. */
 
 
-
+        LocRot lastlr = null;
 
         while (opModeIsActive()) {
             LocRot locrot = getLocRot();
             telemetry.addLine("Getting locrot");
             if (locrot != null) {
-                telemetry.addLine("Found locrot");
+                lastlr = locrot;
+                /*telemetry.addLine("Found locrot");
 
                 telemetry.addData("Roll (deg):", locrot.rotation.firstAngle);
                 telemetry.addData("Pitch:", locrot.rotation.secondAngle);
@@ -348,12 +349,21 @@ public class TestVuforiaNav extends LinearOpMode {
 
                 telemetry.addData("X (in):", locrot.location.get(0));
                 telemetry.addData("Y:", locrot.location.get(1));
-                telemetry.addData("Z:", locrot.location.get(2));
+                telemetry.addData("Z:", locrot.location.get(2));*/
             }else {
-                telemetry.addLine("Cannot get locrot");
+                //telemetry.addLine("Cannot get locrot");
             }
 
-            telemetry.update();
+            if (lastlr != null) {
+                telemetry.addData("Roll (deg):", lastlr.rotation.firstAngle);
+                telemetry.addData("Pitch:", lastlr.rotation.secondAngle);
+                telemetry.addData("Direction:", lastlr.rotation.thirdAngle);
+
+                telemetry.addData("X (in):", lastlr.location.get(0));
+                telemetry.addData("Y:", lastlr.location.get(1));
+                telemetry.addData("Z:", lastlr.location.get(2));
+                telemetry.update();
+            }
         }
     }
 }
