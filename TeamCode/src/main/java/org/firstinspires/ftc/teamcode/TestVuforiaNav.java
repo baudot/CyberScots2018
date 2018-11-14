@@ -359,7 +359,7 @@ public class TestVuforiaNav extends LinearOpMode {
                 telemetry.addData("Pitch:", lastlr.rotation.secondAngle);
                 telemetry.addData("Direction:", lastlr.rotation.thirdAngle);
 
-                telemetry.addData("X (in):", lastlr.location.get(0));
+                telemetry.addData("X (in):", (int)lastlr.location.get(0));
                 telemetry.addData("Y:", lastlr.location.get(1));
                 telemetry.addData("Z:", lastlr.location.get(2));
                 telemetry.update();
