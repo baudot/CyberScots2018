@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 FIRST. All rights reserved.
+/* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -29,8 +29,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -52,61 +55,13 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 /**
- * This 2018-2019 OpMode illustrates the basics of using the Vuforia localizer to determine
- * positioning and orientation of robot on the FTC field.
- * The code is structured as a LinearOpMode
+ * This is NOT an opmode.
  *
- * Vuforia uses the phone's camera to inspect it's surroundings, and attempt to locate target images.
- *
- * When images are located, Vuforia is able to determine the position and orientation of the
- * image relative to the camera.  This sample code than combines that information with a
- * knowledge of where the target images are on the field, to determine the location of the camera.
- *
- * This example assumes a "square" field configuration where the red and blue alliance stations
- * are on opposite walls of each other.
- *
- * From the Audience perspective, the Red Alliance station is on the right and the
- * Blue Alliance Station is on the left.
-
- * The four vision targets are located in the center of each of the perimeter walls with
- * the images facing inwards towards the robots:
- *     - BlueRover is the Mars Rover image target on the wall closest to the blue alliance
- *     - RedFootprint is the Lunar Footprint target on the wall closest to the red alliance
- *     - FrontCraters is the Lunar Craters image target on the wall closest to the audience
- *     - BackSpace is the Deep Space image target on the wall farthest from the audience
- *
- * A final calculation then uses the location of the camera on the robot to determine the
- * robot's location and orientation on the field.
- *
- * @see VuforiaLocalizer
- * @see VuforiaTrackableDefaultListener
- * see  ftc_app/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- *
- * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
- *uis explained below.
+ * This class can be used to define all the specific hardware for a single robot.
+ * In this case that robot is a Ragbot.
  */
-
-@Autonomous(name="Test Vuforia", group ="Concept")
-//@Disabled
-public class TestVuforiaNav extends LinearOpMode {
-    private List<VuforiaTrackable> allTrackables;
-/*
-    public void move(double forward, double turn) {
-        double leftPower = forward;
-        double rightPower = forward;
-        leftPower += turn;
-        rightPower -= turn;
-        leftPower = Range.clip(leftPower, -1, 1);
-        rightPower = Range.clip(rightPower, -1, 1);
-
-        robot.frontLeftDrive.setPower(leftPower);
-        robot.backLeftDrive.setPower(leftPower);
-        robot.frontRightDrive.setPower(rightPower);
-        robot.backRightDrive.setPower(rightPower);
-    }*/
+public class VuforiaPos
+{
 
     public void vuforiaInit() {
 
@@ -130,7 +85,7 @@ public class TestVuforiaNav extends LinearOpMode {
          */
 
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
@@ -246,8 +201,8 @@ public class TestVuforiaNav extends LinearOpMode {
          * In this example, it is centered (left to right), but 110 mm forward of the middle of the robot, and 200 mm above ground level.
          */
 
-        final int CAMERA_FORWARD_DISPLACEMENT  = 110;   // eg: Camera is 110 mm in front of robot center
-        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
+        final int CAMERA_FORWARD_DISPLACEMENT  = 0;   // eg: Camera is 110 mm in front of robot center
+        final int CAMERA_VERTICAL_DISPLACEMENT = 311;   // eg: Camera is 200 mm above ground
         final int CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
@@ -264,7 +219,7 @@ public class TestVuforiaNav extends LinearOpMode {
         targetsRoverRuckus.activate();
     }
 
-    public LocRot getLocRot() {
+    private LocRot getLocRot() {
 
         OpenGLMatrix lastLocation = null;
         // check all the trackable target to see which one (if any) is visible.
@@ -288,13 +243,10 @@ public class TestVuforiaNav extends LinearOpMode {
         if (targetVisible && lastLocation != null) {
             // express position (translation) of robot in inches.
             VectorF translation = lastLocation.getTranslation();
-            //telemetry.addData("Pos (cm)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-            //        translation.get(0) / 10, translation.get(1) / 10, translation.get(2) / 10);
 
             // express the rotation of the robot in degrees.
             Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-           // telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-            telemetry.update();
+
             LocRot lr = new LocRot();
             lr.location = translation;
             lr.rotation = rotation;
@@ -302,68 +254,40 @@ public class TestVuforiaNav extends LinearOpMode {
             return lr;
         }
         else {
-            //telemetry.addData("Visible Target", "none"); //The target is not visible
-            telemetry.update();
             return null;
         }
 
     }
 
+    static final double LOCROT_TIMEOUT = 1000; //Time until the last known location is no longer working (in milliseconds)
 
-    @Override public void runOpMode() {
+    private List<VuforiaTrackable> allTrackables;
 
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
-         * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
-         */
+    private HardwareMap hwMap;
 
+    ElapsedTime timeSinceLastLocRot = new ElapsedTime();
 
-        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+    boolean lrIsValid = false;
+    LocRot lastlr = null;
 
+    public void updatePosition() {
+        LocRot locrot = getLocRot();
 
-
-        /** Wait for the game to begin */
-        telemetry.addData(">", "Press Play to start");
-        telemetry.update();
-
-        vuforiaInit();
-
-        waitForStart();
-
-        /** Start tracking the data sets we care about. */
-
-
-        LocRot lastlr = null;
-
-        while (opModeIsActive()) {
-            LocRot locrot = getLocRot();
-            telemetry.addLine("Getting locrot");
-            if (locrot != null) {
-                lastlr = locrot;
-                /*telemetry.addLine("Found locrot");
-
-                telemetry.addData("Roll (deg):", locrot.rotation.firstAngle);
-                telemetry.addData("Pitch:", locrot.rotation.secondAngle);
-                telemetry.addData("Direction:", locrot.rotation.thirdAngle);
-
-                telemetry.addData("X (in):", locrot.location.get(0));
-                telemetry.addData("Y:", locrot.location.get(1));
-                telemetry.addData("Z:", locrot.location.get(2));*/
-            }else {
-                //telemetry.addLine("Cannot get locrot");
-            }
-
-            if (lastlr != null) {
-                telemetry.addData("Roll (deg):", lastlr.rotation.firstAngle);
-                telemetry.addData("Pitch:", lastlr.rotation.secondAngle);
-                telemetry.addData("Direction:", lastlr.rotation.thirdAngle);
-
-                telemetry.addData("X (in):", (int)lastlr.location.get(0));
-                telemetry.addData("Y:", (int)lastlr.location.get(1));
-                telemetry.addData("Z:", (int)lastlr.location.get(2));
-                telemetry.update();
-            }
+        if (locrot != null) { // A poster is visible (sometimes doesn't work even if a poster is visible)
+            lastlr = locrot;
+            timeSinceLastLocRot.reset();
+        }else {
+            //do something if no poster is seen
         }
+        lrIsValid = timeSinceLastLocRot.milliseconds() < LOCROT_TIMEOUT; //If the location and rotation is still valid, the time since it was last found is under the timeout
+    }
+
+    public VuforiaPos(HardwareMap hwMap){
+        this.hwMap = hwMap;
+    }
+
+    public void init() {
+        vuforiaInit();
     }
 }
+
