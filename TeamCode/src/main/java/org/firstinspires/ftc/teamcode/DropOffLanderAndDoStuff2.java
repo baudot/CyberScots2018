@@ -303,7 +303,7 @@ public class DropOffLanderAndDoStuff2 extends LinearOpMode {
         }
     }
     public void dropOffMarker(){
-        encoderDrive(TURN_SPEED,   -5, 5, 0.25);         // unhook
+        encoderDrive(TURN_SPEED,   -10, 10, 0.25);         // unhook
         encoderDrive(DRIVE_SPEED,  10,  10, 0.5);     //backup
         encoderDrive(TURN_SPEED,   10, -10, 0.5);       // turn
         encoderDrive(DRIVE_SPEED,  10,  10, 0.5);     //backup
