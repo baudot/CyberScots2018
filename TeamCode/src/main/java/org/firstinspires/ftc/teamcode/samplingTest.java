@@ -7,27 +7,21 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-//Jack when someone changes this code: https://www.youtube.com/watch?v=cE1FrqheQNI
-
 @Autonomous(name = "Sampling Test", group = "Cyber Scots")
-@Disabled
+//@Disabled
 public class samplingTest extends LinearOpMode {
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
-
-
+    HardwareRagbot robot = new HardwareRagbot();
     public void sampling() {
+        robot.init(hardwareMap);
+
         // Find the cube
-        ColorSensor colorSensor;
-        colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
-        telemetry.addData("Red", colorSensor.red());
-        telemetry.addData("Green", colorSensor.green());
-        telemetry.addData("Blue ", colorSensor.blue());
-        colorSensor.enableLed(true);
-
-
-        if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
-            // Knock off the cube once it has been found
+        telemetry.addData("Red", robot.sensorColor.red());
+        telemetry.addData("Green", robot.sensorColor.green());
+        telemetry.addData("Blue ", robot.sensorColor.blue());
+        robot.sensorColor.enableLed(true);
+        if ((robot.sensorColor.red() + robot.sensorColor.green()) / 2 > robot.sensorColor.blue()) {
             telemetry.addData("Cube", "Found Cube");
         }
     }

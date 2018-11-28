@@ -34,6 +34,8 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 /**
  * This is NOT an opmode.
@@ -51,8 +53,9 @@ public class HardwareRagbot
     public DcMotor backRightDrive   = null;  //All 4 drive motors
     public DcMotor armL   = null; //The motor that lifts the arm
     public DcMotor armR  = null; //The motor that lifts the arm
-    public Servo hook = null; //The servo that hooks on to the lander
-
+    public Servo hook = null; //The\ servo that hooks on to the lander
+    public DistanceSensor sensorDistance = null;
+    public ColorSensor sensorColor = null;
     //public static final double MID_SERVO       =  0.5 ;
 
 
@@ -79,6 +82,8 @@ public class HardwareRagbot
         armR  = hardwareMap.get(DcMotor.class, "armr");
         button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
         hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
+        sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
+        sensorDistance = hardwareMap.get(DistanceSensor.class, "color");
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors

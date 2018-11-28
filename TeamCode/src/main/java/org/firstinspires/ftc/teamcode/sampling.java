@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 
 //Jack when someone changes this code: https://www.youtube.com/watch?v=cE1FrqheQNI
 
-@Autonomous(name = "Sampling Test", group = "Cyber Scots")
+@Autonomous(name = "Sampling", group = "Cyber Scots")
 @Disabled
 public class sampling extends LinearOpMode {
     // Declare OpMode members
