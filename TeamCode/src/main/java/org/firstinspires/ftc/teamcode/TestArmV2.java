@@ -29,14 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 //import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 //import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -64,12 +60,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@TeleOp(name = "RagBot 3.0 4-Wheel Drive", group = "Cyber Scots")
+@TeleOp(name = "T.A.V.2", group = "Cyber Scots")
 //@Disabled
-public class FourWheelDrive extends LinearOpMode {
+public class TestArmV2 extends LinearOpMode {
     // Define class members
 
-    HardwareRagbotNoArm         robot   = new HardwareRagbotNoArm();   // Use a Ragbot's hardware
+    HardwareRagbot         robot   = new HardwareRagbot();   // Use a Ragbot's hardware
 
     static final int EXPONENT = 3; //Exponent for exponential drive, higher = more fine control but harder to do medium speed
     static final double     FORWARD_SPEED = 0.3; //How fast the robot moves forward, obviously
@@ -78,7 +74,8 @@ public class FourWheelDrive extends LinearOpMode {
     static final double     LIFTING_FORWARD_SPEED = 0.1; //How fast the robot moves forward, obviously
     static final double     LIFTING_TURN_SPEED    = 0.1; //How fast the robot turns, obviously
 
-
+    static final double CLAW_OPEN     =  .5;     // Maximum rotational position of the hook
+    static final double CLAW_CLOSED     = .6;     // Minimum rotational position of the hook
 
     static final double MINERAL_ARM_SPEED = .2;
     static final int MINERAL_ENCODER_SPEED = 10;
@@ -90,22 +87,18 @@ public class FourWheelDrive extends LinearOpMode {
     double joystickForward = 0;
     double joystickTurn = 0; //How much (from -1 to 1) the robot needs to turn or move
 
-    //int shoulderPos = 0;
-    //int elbowPos = 0;
+    int shoulderPos = 0;
 
     double motorPower = 0; //Power to the arm motor
 
-    //boolean clawButtonWasPressed = false;
-    //boolean clawOpen = true;
+    boolean clawButtonWasPressed = false;
+    boolean clawOpen = false;
 
     boolean liftingModeButtonWasPressed = false;
     boolean liftingModeIsActive = false;
 
     boolean lockArmWasPressed = false;
     boolean armLocked = false;
-
-    //boolean elbowFailed = false;
-    //boolean shoulderFailed = false;
 
     //double hookPos = 0; //Position of the hook servo
 
@@ -149,86 +142,48 @@ public class FourWheelDrive extends LinearOpMode {
          */
         robot.init(hardwareMap);
 
-        //shoulderPos = robot.shoulder.getCurrentPosition();
-        //elbowPos = robot.elbow.getCurrentPosition();
+        shoulderPos = robot.shoulder.getCurrentPosition();
 
-        //shoulderFailed = false;
-        //elbowFailed = elbowPos == 0;
+        robot.shoulder.setPower(0.5);
 
-        //if (shoulderFailed) {
-         //   robot.shoulder.setPower(0);
-          //  robot.shoulder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //}else {
-            //robot.shoulder.setPower(0.5);
-        //}
+        robot.shoulder.setTargetPosition(shoulderPos);
 
-        //if (elbowFailed) {
-            //robot.elbow.setPower(0);
-            //robot.elbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //}else {
-        //    robot.elbow.setPower(0.5);
-        //}
-
-        //robot.shoulder.setTargetPosition(shoulderPos);
-        //robot.elbow.setTargetPosition(elbowPos);
-
-        /*telemetry.addData(">", "Press Start to use Zorb's awesome drive for the Ragbot" );
-        telemetry.addData(">", "             _       _   " );
-        telemetry.addData(">", " ___ ___ ___| |_ ___| |_ " );
-        telemetry.addData(">", "|  _| .'| . | . | . |  _|" );
-        telemetry.addData(">", "|_| |__,|_  |___|___|_|  " );
-        telemetry.addData(">", "        |___|            " );
-        telemetry.update();*/
+        telemetry.addData(">", "Press Start to use Zorb's awesome drive for the Ragbot" );
+        telemetry.addData(">", " ______    _______  _______  _______  _______  _______  " );
+        telemetry.addData(">", "|    _ |  |   _   ||       ||  _    ||       ||       |" );
+        telemetry.addData(">", "|   | ||  |  |_|  ||    ___|| |_|   ||   _   ||_     _|" );
+        telemetry.addData(">", "|   |_||_ |       ||   | __ |       ||  | |  |  |   |" );
+        telemetry.addData(">", "|    __  ||       ||   ||  ||  _   | |  |_|  |  |   |" );
+        telemetry.addData(">", "|   |  | ||   _   ||   |_| || |_|   ||       |  |   |" );
+        telemetry.addData(">", "|___|  |_||__| |__||_______||_______||_______|  |___|" );
+        telemetry.update();
         waitForStart();
 
         while(opModeIsActive()){
-            //robot.shoulder.setTargetPosition(shoulderPos);
-            //robot.elbow.setTargetPosition(elbowPos);
+            robot.shoulder.setTargetPosition(shoulderPos);
 
-            //telemetry.addData("Shoulder target Pos: ", shoulderPos);
+            telemetry.addData("Shoulder Pos: ", shoulderPos);
 
-            //telemetry.addData("Shoulder actual Pos: ", robot.shoulder.getCurrentPosition());
+            telemetry.addData("Motor Pos: ", robot.shoulder.getCurrentPosition());
 
-            //telemetry.addData("Elbow target Pos: ", elbowPos);
-
-            //telemetry.addData("Elbow actual Pos: ", robot.elbow.getCurrentPosition());
-
-            /*if (gamepad1.x && !clawButtonWasPressed) {
+            if (gamepad1.x && !clawButtonWasPressed) {
                 clawButtonWasPressed = true;
                 clawOpen = !clawOpen;
-                robot.claw.setPosition(clawOpen ? robot.CLAW_CLOSED : robot.CLAW_OPEN);
+                robot.claw.setPosition(clawOpen ? CLAW_CLOSED : CLAW_OPEN);
             }else if (!gamepad1.x) {
                 clawButtonWasPressed = false;
-            }*/
-
-            /*if (elbowFailed && shoulderFailed) {
-                telemetry.addLine("The hardware team has failed");
-            }else if (elbowFailed) {
-                telemetry.addLine("Hardware messed up the elbow");
-            }else if (shoulderFailed) {
-                telemetry.addLine("Hardware messed up the shoulder");
-            }*/
-
-
-            /*if (gamepad1.x) {
-                robot.claw.setPosition(0.2);
-                telemetry.addLine("Claw at 0");
-            } else {
-                robot.claw.setPosition(0.4);
-                telemetry.addLine("Claw at 1");
-            }*/
+            }
 
             if (gamepad1.a && !liftingModeButtonWasPressed) {
                 liftingModeButtonWasPressed = true;
                 liftingModeIsActive = !liftingModeIsActive;
-
+                telemetry.addLine("Lifting Mode");
             }else if (!gamepad1.a) {
                 liftingModeButtonWasPressed = false;
+                telemetry.addLine("Driving Mode");
             }
 
-            telemetry.addLine(liftingModeIsActive ? "Driving Mode" : "Lifting Mode");
-
-            //telemetry.addData("Elbow pos: ", robot.elbow.getCurrentPosition());
+            telemetry.addData("Elbow pos: ", robot.elbow.getCurrentPosition());
 
             telemetry.update();
 
@@ -249,27 +204,11 @@ public class FourWheelDrive extends LinearOpMode {
 
             //robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
 
-            /*if (!liftingModeIsActive) {
-                //if (shoulderFailed) {
-                  //  robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
-                //}else {
-                    shoulderPos += gamepad1.right_trigger * MINERAL_ENCODER_SPEED - gamepad1.left_trigger * MINERAL_ENCODER_SPEED;
-                //}
+            if (!liftingModeIsActive) {
+                shoulderPos += gamepad1.right_trigger * MINERAL_ENCODER_SPEED - gamepad1.left_trigger * MINERAL_ENCODER_SPEED;
 
-                //if (elbowFailed) {
-                    //robot.elbow.setPower((gamepad1.left_bumper ? 0 : MINERAL_ARM_SPEED) - (gamepad1.right_bumper ? 0 : MINERAL_ARM_SPEED));
-
-                    if (gamepad1.left_bumper) {
-                        robot.elbow.setPower(.5);
-                    }else if (gamepad1.right_bumper) {
-                        robot.elbow.setPower(-.5);
-                    }
-                //}else {
-                //    elbowPos += (gamepad1.left_bumper ? 0 : MINERAL_ENCODER_SPEED / 2) - (gamepad1.right_bumper ? 0 : MINERAL_ENCODER_SPEED / 2);
-                //}
-
-                //robot.elbow.setPower((gamepad1.left_bumper ? 0 : MINERAL_ARM_SPEED) - (gamepad1.right_bumper ? 0 : MINERAL_ARM_SPEED));
-            }*/
+                robot.elbow.setPower((gamepad1.left_bumper ? 0 : MINERAL_ARM_SPEED) - (gamepad1.right_bumper ? 0 : MINERAL_ARM_SPEED));
+            }
 
             //telemetry.addData("arm left", robot.armL.getCurrentPosition());
 
@@ -300,7 +239,7 @@ public class FourWheelDrive extends LinearOpMode {
             joystickForward = gamepad1.left_stick_y;
             joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
 
-            if (!liftingModeIsActive) {
+            if (liftingModeIsActive) {
                 joystickForward = -joystickForward;
                 //joystickTurn = -joystickTurn;
             }
@@ -330,6 +269,10 @@ public class FourWheelDrive extends LinearOpMode {
             motorPowerL = Range.clip(motorPowerL, -1, 1);
             motorPowerR = Range.clip(motorPowerR, -1, 1); //Make sure the motors aren't going faster than they can
 
+
+            // Display the current value
+            telemetry.addData(">", "Press Stop to end Zorb's epic drive." );
+            telemetry.update();
 
             robot.frontLeftDrive.setPower(motorPowerL);
             robot.frontRightDrive.setPower(motorPowerR);

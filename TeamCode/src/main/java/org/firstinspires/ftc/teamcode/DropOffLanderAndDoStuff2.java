@@ -30,12 +30,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 /**
  * This file illustrates the concept of driving a path based on encoder counts.
@@ -48,6 +45,12 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  *  This code ALSO requires that the drive Motors have been configured such that a positive
  *  power command moves them forwards, and causes the encoders to count UP.
  *
+ *   The desired path in this example is:
+ *   - Drive forward for 48 inches
+ *   - Spin right for 12 Inches
+ *   - Drive Backwards for 24 inches
+ *   - Stop and close the claw.
+ *
  *  The code is written using a method called: encoderDrive(speed, leftInches, rightInches, timeoutS)
  *  that performs the actual movement.
  *  This methods assumes that each movement is relative to the last stopping place.
@@ -58,10 +61,11 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="D.O.L.", group="Ragbot")
-public class DropOffLander extends LinearOpMode {
+@Autonomous(name="D.O.L.A.D.S.2.", group="Ragbot")
+public class DropOffLanderAndDoStuff2 extends LinearOpMode {
+ 
     /* Declare OpMode members. */
-    HardwareRagbotNoArm         robot   = new HardwareRagbotNoArm();   // Use a Pushbot's hardware
+    HardwareRagbot         robot   = new HardwareRagbot();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
@@ -72,8 +76,9 @@ public class DropOffLander extends LinearOpMode {
                                                       (WHEEL_DIAMETER_INCHES * 3.1415926);
     static final double     COUNTS_PER_DEGREE         = (COUNTS_PER_MOTOR_REV * ARM_DRIVE_GEAR_REDUCTION)
                                                             / 360;
-    static final double     DRIVE_SPEED             = 0.6;
-    static final double     TURN_SPEED              = 0.5;
+    static final double     DRIVE_SPEED             = 0.2;
+    static final double     FULL_SPEED              = 1.0;
+    static final double     TURN_SPEED              = 0.2;
 
     int                  current_armL_pos        = 0;
     int                  current_armR_pos        = 0;
@@ -146,22 +151,21 @@ public class DropOffLander extends LinearOpMode {
         current_armR_pos = robot.armR.getCurrentPosition();
 
 
-
+        // hold onto the team marker
         // Wait for the game to start (driver presses PLAY)
         waitForStartWhileHanging();
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         armDrive (0.5, 30.0, 2.0);
+        sleep(2000);
+        robot.armL.setPower(0);
+        robot.armR.setPower(0);
+        encoderDrive(DRIVE_SPEED,-5, -5, 0.25);
         //encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
         //encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
-
-        //robot.hook.setPosition(0.5);            // S4: Stop and close the claw.
-        sleep(1000);     // pause for servos to move
-
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
+        //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec time
+        dropOffMarker();
     }
 
     /*
@@ -298,4 +302,23 @@ public class DropOffLander extends LinearOpMode {
             //  sleep(250);   // optional pause after each move
         }
     }
+    public void dropOffMarker(){
+        encoderDrive(TURN_SPEED,   -10, 10, 0.25);         // unhook
+        encoderDrive(DRIVE_SPEED,  10,  10, 0.5);     //backup
+        encoderDrive(TURN_SPEED,   10, -10, 0.5);       // turn
+        encoderDrive(DRIVE_SPEED,  10,  10, 0.5);     //backup
+        encoderDrive(TURN_SPEED,   -5, 5, 0.25);         //straighten
+        encoderDrive(FULL_SPEED,-30,-30,1.5);            //back up to depo
+        robot.holder.setPosition(0.5);                                                // release team marker
+        sleep(1000);
+    }
+    public void parkInCrater(){
+        encoderDrive(TURN_SPEED,   -5, 5, 4.0);         // unhook
+        encoderDrive(DRIVE_SPEED,  10,  10, 5.0);     //backup
+        encoderDrive(TURN_SPEED,   10, -10, 4.0);       // turn
+        encoderDrive(DRIVE_SPEED,  10,  10, 5.0);     //backup
+        encoderDrive(TURN_SPEED,   -5, 5, 4.0);         //straighten
+        encoderDrive(DRIVE_SPEED,-30,-30,5);            //back up to crator
+    }
 }
+
