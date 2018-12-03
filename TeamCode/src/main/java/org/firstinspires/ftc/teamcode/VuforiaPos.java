@@ -65,6 +65,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 public class VuforiaPos
 {
+    float mmPerInch = 25.4f;
 
     public void vuforiaInit() {
 
@@ -72,7 +73,7 @@ public class VuforiaPos
 
         // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
         // We will define some constants and conversions here
-        float mmPerInch = 25.4f;
+
         float mmFTCFieldWidth = (12 * 6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
         float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
 
@@ -272,6 +273,10 @@ public class VuforiaPos
 
     private Telemetry telemetry;
 
+    private ElapsedTime averageTime = new ElapsedTime();
+
+    static final double TIME_TO_AVERAGE = 500;
+
     ElapsedTime timeSinceLastLocRot = new ElapsedTime();
 
     boolean lrIsValid = false;
@@ -309,14 +314,43 @@ public class VuforiaPos
         robot.backRightDrive.setPower(rightPower);
     }
 
+
     public void init() {
         vuforiaInit();
     }
 
     public void driveToPoint(double xDestination, double yDestination) {
-        //LocRot startLocRot = lastlr;
-        //telemetry.addData("Using position from this many milliseconds ago: ", timeSinceLastLocRot.milliseconds());
+        LocRot startLocRot = lastlr;
+        averageTime.reset();
+        while (averageTime.milliseconds() < TIME_TO_AVERAGE) {
+            startLocRot.location.put(0,  (startLocRot.location.get(0) + lastlr.location.get(0))/2);
+            startLocRot.location.put(1,  (startLocRot.location.get(1) + lastlr.location.get(1))/2);
+            startLocRot.location.put(2,  (startLocRot.location.get(2) + lastlr.location.get(2))/2);
 
+            startLocRot.rotation.firstAngle = (startLocRot.rotation.firstAngle + lastlr.rotation.firstAngle) / 2;
+            startLocRot.rotation.secondAngle = (startLocRot.rotation.secondAngle + lastlr.rotation.secondAngle) / 2;
+            startLocRot.rotation.thirdAngle = (startLocRot.rotation.thirdAngle + lastlr.rotation.thirdAngle) / 2;
+        }
+
+        double dx = startLocRot.location.get(0) - xDestination;
+        double dy = startLocRot.location.get(1) - yDestination;
+
+        if (dy == 0) {
+            dy = 1;
+        }
+
+        double angleToTurn = Math.atan(dx/dy);
+
+        double fractionToTurn = angleToTurn / (Math.PI * 2);
+
+        if (dy < 0) {
+            angleToTurn += Math.PI;
+        }
+
+        robot.encoderDrive(HardwareRagbotNoArm.TURN_SPEED, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * fractionToTurn, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * -fractionToTurn, 3);
+
+        double driveDistance = Math.sqrt((dx * dx) + (dy * dy)) / mmPerInch;
+
+        robot.encoderDrive(HardwareRagbotNoArm.DRIVE_SPEED, driveDistance, driveDistance, 5);
     }
 }
-
