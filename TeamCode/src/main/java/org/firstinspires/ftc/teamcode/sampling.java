@@ -20,10 +20,10 @@ public class sampling extends LinearOpMode {
     static final double WHIP_DOWN_POSITION = 0.5;
     double LEFT_NO_WHACK= 0;
     static final double LEFT_WHACK_POSITION = 0.2;
-    double MID_NO_WHACK = 0;
+    double MID_NO_WHACK = 0.2;
     static final double MID_WHACK_POSITION = 0.4;
-    double RIGHT_NO_WHACK = 0;
-    static final double RIGHT_WHACK_POSITION = 0.2;
+    double RIGHT_NO_WHACK = 0.4;
+    static final double RIGHT_WHACK_POSITION = 0.6;
 
     public void sampling() {
         // Find the cube
