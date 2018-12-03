@@ -18,8 +18,12 @@ public class sampling extends LinearOpMode {
     public Servo whipSide = null;
     static final double WHIP_UP_POSITION = 0;
     static final double WHIP_DOWN_POSITION = 0.5;
-    double whipWhackPosition = 0.2;
-    double noWhackPosition = 0;
+    double LEFT_NO_WHACK= 0;
+    static final double LEFT_WHACK_POSITION = 0.2;
+    double MID_NO_WHACK = 0;
+    static final double MID_WHACK_POSITION = 0.2;
+    double RIGHT_NO_WHACK = 0;
+    static final double RIGHT_WHACK_POSITION = 0.2;
 
     public void sampling() {
         // Find the cube
@@ -31,32 +35,28 @@ public class sampling extends LinearOpMode {
         colorSensor.enableLed(true);
 
         // Unfold the jewel whip
-        whipUp.setPosition(WHIP_UP_POSITION);
+        whipUp.setPosition(WHIP_DOWN_POSITION);
 
         if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
             // Knock off the cube once it has been found
-            whipSide.setPosition(whipWhackPosition);
-            whipSide.setPosition(noWhackPosition);
+            whipSide.setPosition(LEFT_WHACK_POSITION);
+            whipSide.setPosition(LEFT_NO_WHACK);
             telemetry.addData("Cube", "Found Cube");
         } else {
             whipUp.setPosition(WHIP_UP_POSITION);
-            whipWhackPosition = whipWhackPosition + 0.2;
-            noWhackPosition = noWhackPosition + 0.2;
             if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
                 // Knock off the cube once it has been found
                 whipUp.setPosition(WHIP_DOWN_POSITION);
-                whipSide.setPosition(whipWhackPosition);
-                whipSide.setPosition(noWhackPosition);
+                whipSide.setPosition(MID_WHACK_POSITION);
+                whipSide.setPosition(MID_NO_WHACK);
                 whipUp.setPosition(WHIP_UP_POSITION);
             } else {
                 whipUp.setPosition(WHIP_UP_POSITION);
-                whipWhackPosition = whipWhackPosition + 0.2;
-                noWhackPosition = noWhackPosition + 0.2;
                 if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
                     // Knock off the cube once it has been found
                     whipUp.setPosition(WHIP_DOWN_POSITION);
-                    whipSide.setPosition(whipWhackPosition);
-                    whipSide.setPosition(noWhackPosition);
+                    whipSide.setPosition(RIGHT_WHACK_POSITION);
+                    whipSide.setPosition(RIGHT_NO_WHACK);
                     whipUp.setPosition(WHIP_UP_POSITION);
                 }
             }
