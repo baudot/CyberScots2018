@@ -48,6 +48,18 @@ public class HardwareRagbotNoArm
     static final double CLAW_OPEN     =  0.25;     // Maximum rotational position of the hook
     static final double CLAW_CLOSED     = 0.35;     // Minimum rotational position of the hook
 
+    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
+    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
+    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.14159265);
+
+    static final double WHEEL_CIRCLE_RADIUS = 17; //The radius of the circle going around all of the wheels with the center of the robot in the middle
+    static final double FULL_CIRCLE_INCHES = WHEEL_CIRCLE_RADIUS * 2 * 3.14159265;
+
+    static final double     DRIVE_SPEED             = 0.6;
+    static final double     TURN_SPEED              = 0.5;
+
     /* Public OpMode members. */
     public DigitalChannel button = null;  // Device Object
     public DcMotor frontLeftDrive   = null;
@@ -70,10 +82,79 @@ public class HardwareRagbotNoArm
     /* local OpMode members. */
     HardwareMap hardwareMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
+    private ElapsedTime encoderTimer = new ElapsedTime();
 
     /* Constructor */
     public HardwareRagbotNoArm(){
 
+    }
+
+    public void encoderDrive(double speed,
+                             double leftInches, double rightInches,
+                             double timeoutS) {
+        int newFrontLeftTarget;
+        int newFrontRightTarget;
+
+        int newBackLeftTarget;
+        int newBackRightTarget;
+
+        // Ensure that the opmode is still active
+
+        // Determine new target position, and jack to motor controller
+        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+        newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+
+        newBackLeftTarget = backLeftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+        newBackRightTarget = backRightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+
+        frontLeftDrive.setTargetPosition(newFrontLeftTarget);
+        frontRightDrive.setTargetPosition(newFrontRightTarget);
+        backLeftDrive.setTargetPosition(newBackLeftTarget);
+        backRightDrive.setTargetPosition(newBackRightTarget);
+
+        // Turn On RUN_TO_POSITION
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // reset the timeout time and start motion.
+        encoderTimer.reset();
+        frontLeftDrive.setPower(Math.abs(speed));
+        frontRightDrive.setPower(Math.abs(speed));
+        backLeftDrive.setPower(Math.abs(speed));
+        backRightDrive.setPower(Math.abs(speed));
+
+        // keep looping while we are still active, and there is time left, and both motors are running.
+        // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+        // its target position, the motion will stop.  This is "safer" in the event that the robot will
+        // always end the motion as soon as possible.
+        // However, if you require that BOTH motors have finished their moves before the robot continues
+        // onto the next step, use (isBusy() || isBusy()) in the loop test.
+        while ((encoderTimer.seconds() < timeoutS) &&
+                (frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy())) {
+
+           /* // Display it for the driver.
+            telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+            telemetry.addData("Path2",  "Running at %7d :%7d",
+                    leftDrive.getCurrentPosition(),
+                    rightDrive.getCurrentPosition());
+            telemetry.update();*/
+        }
+
+        // Stop all motion;
+        frontLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        backLeftDrive.setPower(0);
+        backRightDrive.setPower(0);
+
+        // Turn off RUN_TO_POSITION
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //  sleep(250);   // optional pause after each move
     }
 
     public void lockArmInPlace() {
