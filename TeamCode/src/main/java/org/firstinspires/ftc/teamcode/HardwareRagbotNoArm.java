@@ -116,6 +116,7 @@ public class HardwareRagbotNoArm
 
         //button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
         //hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
+        holder  = hardwareMap.get(Servo.class, "markerholder");// Set the motors from their configurations
 
         //claw  = hardwareMap.get(Servo.class, "claw");// Set the motors from their configurations
 
@@ -158,6 +159,7 @@ public class HardwareRagbotNoArm
 
         // Initialize ALL installed servos.
         //hook.setPosition(0.5); //Set hook to center position
+        holder.setPosition(0.5);
         //claw.setPosition(CLAW_OPEN); //Set claw to center position
     }
 }
