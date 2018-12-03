@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class samplingTest extends LinearOpMode {
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
-    HardwareRagbot robot = new HardwareRagbot();
+    HardwareRagbotNoArm robot = new HardwareRagbotNoArm();
     public void sampling() {
         robot.init(hardwareMap);
 
@@ -21,12 +21,17 @@ public class samplingTest extends LinearOpMode {
         telemetry.addData("Green", robot.sensorColor.green());
         telemetry.addData("Blue ", robot.sensorColor.blue());
         robot.sensorColor.enableLed(true);
-        if ((robot.sensorColor.red() + robot.sensorColor.green()) / 2 > robot.sensorColor.blue()) {
+        if ((robot.sensorColor.red() + robot.sensorColor.green()) / 2 > robot.sensorColor.blue() + 7) {
             telemetry.addData("Cube", "Found Cube");
         }
+        telemetry.update();
     }
 
     public void runOpMode() {
-        sampling();
+        waitForStart();
+        while(opModeIsActive()) {
+            sampling();
+        }
+
     }
 }

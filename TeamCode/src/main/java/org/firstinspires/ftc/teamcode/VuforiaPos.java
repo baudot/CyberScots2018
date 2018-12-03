@@ -34,8 +34,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -43,6 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +60,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 /**
  * This is NOT an opmode.
  *
- * This class can be used to define all the specific hardware for a single robot.
+ * This class can't be used to define all the specific hardware for a single robot.
  * In this case that robot is a Ragbot.
  */
 public class VuforiaPos
@@ -263,7 +266,11 @@ public class VuforiaPos
 
     private List<VuforiaTrackable> allTrackables;
 
+    private HardwareRagbotNoArm robot;
+
     private HardwareMap hwMap;
+
+    private Telemetry telemetry;
 
     ElapsedTime timeSinceLastLocRot = new ElapsedTime();
 
@@ -282,12 +289,34 @@ public class VuforiaPos
         lrIsValid = timeSinceLastLocRot.milliseconds() < LOCROT_TIMEOUT; //If the location and rotation is still valid, the time since it was last found is under the timeout
     }
 
-    public VuforiaPos(HardwareMap hwMap){
-        this.hwMap = hwMap;
+    public VuforiaPos(HardwareRagbotNoArm robot, Telemetry telemetry){
+        this.robot = robot;
+        this.hwMap = robot.hardwareMap;
+        this.telemetry = telemetry;
+    }
+
+    public void move(double forward, double turn) {
+        double leftPower = forward;
+        double rightPower = forward;
+        leftPower += turn;
+        rightPower -= turn;
+        leftPower = Range.clip(leftPower, -1, 1);
+        rightPower = Range.clip(rightPower, -1, 1);
+
+        robot.frontLeftDrive.setPower(leftPower);
+        robot.backLeftDrive.setPower(leftPower);
+        robot.frontRightDrive.setPower(rightPower);
+        robot.backRightDrive.setPower(rightPower);
     }
 
     public void init() {
         vuforiaInit();
+    }
+
+    public void driveToPoint(double xDestination, double yDestination) {
+        //LocRot startLocRot = lastlr;
+        //telemetry.addData("Using position from this many milliseconds ago: ", timeSinceLastLocRot.milliseconds());
+
     }
 }
 

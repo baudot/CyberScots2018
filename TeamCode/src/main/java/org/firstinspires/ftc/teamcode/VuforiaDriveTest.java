@@ -96,7 +96,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 //@Disabled
 public class VuforiaDriveTest extends LinearOpMode {
 
-    HardwareRagbotNoArm robot = new HardwareRagbotNoArm();   // Use a Pushbot's hardware
+    VuforiaPos vpos = null;
+    HardwareRagbotNoArm robot = null;
 
     public void move(double forward, double turn) {
         double leftPower = forward;
@@ -112,9 +113,12 @@ public class VuforiaDriveTest extends LinearOpMode {
         robot.backRightDrive.setPower(rightPower);
     }
 
-    VuforiaPos vpos = new VuforiaPos(robot.hardwareMap);
-
     @Override public void runOpMode() {
+        robot = new HardwareRagbotNoArm();   // Use a Pushbot's hardware
+        robot.init(hardwareMap);
+
+        vpos = new VuforiaPos(robot, telemetry);
+        vpos.init();
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start");
@@ -124,6 +128,8 @@ public class VuforiaDriveTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            vpos.updatePosition();
+
             if (vpos.lastlr != null) {
                 telemetry.addData("Position is valid: ", vpos.lrIsValid);
 
@@ -131,7 +137,7 @@ public class VuforiaDriveTest extends LinearOpMode {
                 telemetry.addData("Pitch:", vpos.lastlr.rotation.secondAngle);
                 telemetry.addData("Direction:", vpos.lastlr.rotation.thirdAngle);
 
-                telemetry.addData("X (in):", (int)vpos.lastlr.location.get(0));
+                telemetry.addData("X (mm):", (int)vpos.lastlr.location.get(0));
                 telemetry.addData("Y:", (int)vpos.lastlr.location.get(1));
                 telemetry.addData("Z:", (int)vpos.lastlr.location.get(2));
 

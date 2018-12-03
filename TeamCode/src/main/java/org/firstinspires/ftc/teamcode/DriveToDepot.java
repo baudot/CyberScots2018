@@ -74,7 +74,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
  *uis explained below.
  */
 
-@Autonomous(name = "[test] Vuforia Drive", group = "Concept")
+@Autonomous(name = "[test] Drive to Depot", group = "Concept")
 //@Disabled
 public class DriveToDepot extends LinearOpMode {
 
@@ -94,7 +94,7 @@ public class DriveToDepot extends LinearOpMode {
         robot.backRightDrive.setPower(rightPower);
     }
 
-    VuforiaPos vpos = new VuforiaPos(robot.hardwareMap);
+    VuforiaPos vpos = new VuforiaPos(robot, telemetry);
 
     @Override public void runOpMode() {
 
