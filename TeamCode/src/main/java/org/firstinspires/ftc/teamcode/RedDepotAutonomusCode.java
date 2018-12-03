@@ -315,7 +315,7 @@ public class RedDepotAutonomusCode extends LinearOpMode {
         sleep(1000);
         robot.holder.setPosition(0.5); //Set arm back to regular  position
     }
-    
+
     public void parkInCrater(){
         encoderDrive(TURN_SPEED,   -5, 5, 4.0);         // unhook
         encoderDrive(DRIVE_SPEED,  10,  10, 5.0);     //backup
