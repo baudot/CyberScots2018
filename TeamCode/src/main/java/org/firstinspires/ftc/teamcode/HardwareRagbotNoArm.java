@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -60,6 +61,7 @@ public class HardwareRagbotNoArm
     //public Servo claw = null; //The claw on the mineral arm
     public Servo holder = null; //The team marker holder
     public Servo pusher = null; //The team marker pusher
+    public ColorSensor sensorColor = null;
     //public Servo hook = null; //The servo that hooks on to the lander
 
     //public static final double MID_SERVO       =  0.5 ;
@@ -108,6 +110,7 @@ public class HardwareRagbotNoArm
         frontRightDrive = hardwareMap.get(DcMotor.class, "front-right");
         armL  = hardwareMap.get(DcMotor.class, "arml");
         armR  = hardwareMap.get(DcMotor.class, "armr");
+        sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
         //shoulder  = hardwareMap.get(DcMotor.class, "shoulder");
        // elbow  = hardwareMap.get(DcMotor.class, "elbow");
 
