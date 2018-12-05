@@ -16,11 +16,11 @@ public class sampling extends LinearOpMode {
     public Servo whipSide = null;
     static final double WHIP_UP_POSITION = 0;
     static final double WHIP_DOWN_POSITION = 0.5;
-    double FAR_LEFT_NO_WHACK= 0;
+    static final double FAR_LEFT_NO_WHACK= 0;
     static final double FAR_LEFT_WHACK_POSITION = 0.2;
-    double LEFT_NO_WHACK = 0.2;
+    static final double LEFT_NO_WHACK = 0.2;
     private static final double LEFT_WHACK_POSITION = 0.4;
-    double RIGHT_NO_WHACK = 0.4;
+    static final double RIGHT_NO_WHACK = 0.4;
     static final double RIGHT_WHACK_POSITION = 0.6;
 
     public void sampling() {
