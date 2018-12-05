@@ -341,11 +341,11 @@ public class VuforiaPos
 
         double angleToTurn = Math.atan(dx/dy);
 
-        double fractionToTurn = angleToTurn / (Math.PI * 2);
-
         if (dy < 0) {
             angleToTurn += Math.PI;
         }
+
+        double fractionToTurn = angleToTurn / (Math.PI * 2);
 
         robot.encoderDrive(HardwareRagbotNoArm.TURN_SPEED, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * fractionToTurn, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * -fractionToTurn, 3);
 
