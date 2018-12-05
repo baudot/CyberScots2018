@@ -323,13 +323,19 @@ public class VuforiaPos
         LocRot startLocRot = lastlr;
         averageTime.reset();
         while (averageTime.milliseconds() < TIME_TO_AVERAGE) {
-            startLocRot.location.put(0,  (startLocRot.location.get(0) + lastlr.location.get(0))/2);
-            startLocRot.location.put(1,  (startLocRot.location.get(1) + lastlr.location.get(1))/2);
-            startLocRot.location.put(2,  (startLocRot.location.get(2) + lastlr.location.get(2))/2);
+            updatePosition();
 
-            startLocRot.rotation.firstAngle = (startLocRot.rotation.firstAngle + lastlr.rotation.firstAngle) / 2;
-            startLocRot.rotation.secondAngle = (startLocRot.rotation.secondAngle + lastlr.rotation.secondAngle) / 2;
-            startLocRot.rotation.thirdAngle = (startLocRot.rotation.thirdAngle + lastlr.rotation.thirdAngle) / 2;
+            if (lastlr != null) {
+                startLocRot.location.put(0,  (startLocRot.location.get(0) + lastlr.location.get(0))/2);
+                startLocRot.location.put(1,  (startLocRot.location.get(1) + lastlr.location.get(1))/2);
+                startLocRot.location.put(2,  (startLocRot.location.get(2) + lastlr.location.get(2))/2);
+
+                startLocRot.rotation.firstAngle = (startLocRot.rotation.firstAngle + lastlr.rotation.firstAngle) / 2;
+                startLocRot.rotation.secondAngle = (startLocRot.rotation.secondAngle + lastlr.rotation.secondAngle) / 2;
+                startLocRot.rotation.thirdAngle = (startLocRot.rotation.thirdAngle + lastlr.rotation.thirdAngle) / 2;
+            }else {
+                telemetry.addLine("OOOOOF: No poster found!");
+            }
         }
 
         double dx = startLocRot.location.get(0) - xDestination;
