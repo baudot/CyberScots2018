@@ -152,6 +152,7 @@ public class RedDepotAutonomusCode extends LinearOpMode {
         current_armL_pos = robot.armL.getCurrentPosition();
         current_armR_pos = robot.armR.getCurrentPosition();
 
+        vpos.init();
 
         // hold onto the team marker
         // Wait for the game to start (driver presses PLAY)
