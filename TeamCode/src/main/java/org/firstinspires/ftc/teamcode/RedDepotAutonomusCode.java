@@ -83,7 +83,7 @@ public class RedDepotAutonomusCode extends LinearOpMode {
     int                  current_armL_pos        = 0;
     int                  current_armR_pos        = 0;
 
-    VuforiaPos   vpos                    = new VuforiaPos(robot, telemetry);
+    VuforiaPos   vpos                    = null;
 
     public void lockArmInPlace() {
         robot.armL.setTargetPosition(current_armL_pos);
@@ -118,6 +118,8 @@ public class RedDepotAutonomusCode extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+
+        vpos = new VuforiaPos(robot, telemetry);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //

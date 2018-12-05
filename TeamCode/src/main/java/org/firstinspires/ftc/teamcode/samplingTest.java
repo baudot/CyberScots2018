@@ -14,8 +14,6 @@ public class samplingTest extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     HardwareRagbotNoArm robot = new HardwareRagbotNoArm();
     public void sampling() {
-        robot.init(hardwareMap);
-
         // Find the cube
         telemetry.addData("Red", robot.sensorColor.red());
         telemetry.addData("Green", robot.sensorColor.green());
@@ -28,10 +26,10 @@ public class samplingTest extends LinearOpMode {
     }
 
     public void runOpMode() {
+        robot.init(hardwareMap);
         waitForStart();
         while(opModeIsActive()) {
             sampling();
         }
-
     }
 }

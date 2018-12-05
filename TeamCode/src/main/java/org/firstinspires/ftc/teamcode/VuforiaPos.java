@@ -263,7 +263,7 @@ public class VuforiaPos
 
     }
 
-    static final double LOCROT_TIMEOUT = 1000; //Time until the last known location is no longer working (in milliseconds)
+    static final double LOCROT_TIMEOUT = 500; //Time until the last known location is no longer working (in milliseconds)
 
     private List<VuforiaTrackable> allTrackables;
 
@@ -325,21 +325,33 @@ public class VuforiaPos
         while (averageTime.milliseconds() < TIME_TO_AVERAGE) {
             updatePosition();
 
-            if (lastlr != null) {
-                startLocRot.location.put(0,  (startLocRot.location.get(0) + lastlr.location.get(0))/2);
-                startLocRot.location.put(1,  (startLocRot.location.get(1) + lastlr.location.get(1))/2);
-                startLocRot.location.put(2,  (startLocRot.location.get(2) + lastlr.location.get(2))/2);
+            if (lastlr != null && lrIsValid) {
+                telemetry.addLine("We think lastlr is not null and is valid");
+                telemetry.update();
+                //startLocRot.location.put(0,  (startLocRot.location.get(0) + lastlr.location.get(0))/2);
+                //startLocRot.location.put(1,  (startLocRot.location.get(1) + lastlr.location.get(1))/2);
+                //startLocRot.location.put(2,  (startLocRot.location.get(2) + lastlr.location.get(2))/2);
 
-                startLocRot.rotation.firstAngle = (startLocRot.rotation.firstAngle + lastlr.rotation.firstAngle) / 2;
-                startLocRot.rotation.secondAngle = (startLocRot.rotation.secondAngle + lastlr.rotation.secondAngle) / 2;
-                startLocRot.rotation.thirdAngle = (startLocRot.rotation.thirdAngle + lastlr.rotation.thirdAngle) / 2;
+                //startLocRot.rotation.firstAngle = (startLocRot.rotation.firstAngle + lastlr.rotation.firstAngle) / 2;
+                //startLocRot.rotation.secondAngle = (startLocRot.rotation.secondAngle + lastlr.rotation.secondAngle) / 2;
+                //startLocRot.rotation.thirdAngle = (startLocRot.rotation.thirdAngle + lastlr.rotation.thirdAngle) / 2;
             }else {
                 telemetry.addLine("OOOOOF: No poster found!");
+                telemetry.update();
+                averageTime.reset();
+                move(0, -0.4);
             }
         }
 
+
+        telemetry.addLine("Wrapping up locrot handling.");
+        telemetry.update();
+
         double dx = startLocRot.location.get(0) - xDestination;
         double dy = startLocRot.location.get(1) - yDestination;
+        //double dx = 0.1;
+        //double dy = 0.1;
+
 
         if (dy == 0) {
             dy = 1;
