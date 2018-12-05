@@ -21,7 +21,7 @@ public class samplingTest extends LinearOpMode {
         telemetry.addData("Green", robot.sensorColor.green());
         telemetry.addData("Blue ", robot.sensorColor.blue());
         robot.sensorColor.enableLed(true);
-        if ((robot.sensorColor.red() + robot.sensorColor.green()) / 2 > robot.sensorColor.blue() + 7) {
+        if ((robot.sensorColor.red() + robot.sensorColor.green()) / 2 > robot.sensorColor.blue() + 15) {
             telemetry.addData("Cube", "Found Cube");
         }
         telemetry.update();
