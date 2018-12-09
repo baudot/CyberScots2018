@@ -73,7 +73,7 @@ public class HardwareRagbotNoArm
     //public Servo claw = null; //The claw on the mineral arm
     public Servo holder = null; //The team marker holder
     public Servo pusher = null; //The team marker pusher
-    public ColorSensor sensorColor = null;
+    //public ColorSensor sensorColor = null;
     //public Servo hook = null; //The servo that hooks on to the lander
 
     //public static final double MID_SERVO       =  0.5 ;
@@ -171,6 +171,19 @@ public class HardwareRagbotNoArm
         armR.setPower(0.5);
     }
 
+    public void antiOverheatlockArm() {
+        int arml_pos = armL.getCurrentPosition();
+        int armr_pos = armR.getCurrentPosition();
+
+        if (armL.getCurrentPosition() < arml_pos || armR.getCurrentPosition() > armr_pos) {
+            armL.setPower(-0.5);
+            armR.setPower(-0.5);
+        }else {
+            armL.setPower(0);
+            armR.setPower(0);
+        }
+    }
+
     public void unlockArm() {
         armL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -191,7 +204,7 @@ public class HardwareRagbotNoArm
         frontRightDrive = hardwareMap.get(DcMotor.class, "front-right");
         armL  = hardwareMap.get(DcMotor.class, "arml");
         armR  = hardwareMap.get(DcMotor.class, "armr");
-        sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
+        //sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
         //shoulder  = hardwareMap.get(DcMotor.class, "shoulder");
        // elbow  = hardwareMap.get(DcMotor.class, "elbow");
 

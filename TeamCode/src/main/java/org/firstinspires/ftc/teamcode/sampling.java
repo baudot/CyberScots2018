@@ -8,20 +8,25 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @Autonomous(name = "Sampling", group = "Cyber Scots")
-@Disabled
+//@Disabled
 public class sampling extends LinearOpMode {
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
     public Servo whipUp = null;
     public Servo whipSide = null;
+
+    static final double WAIT_TIME = 300;
+
     static final double WHIP_UP_POSITION = 0;
     static final double WHIP_DOWN_POSITION = 0.5;
-    static final double FAR_LEFT_NO_WHACK= 0;
-    static final double FAR_LEFT_WHACK_POSITION = 0.2;
-    static final double LEFT_NO_WHACK = 0.2;
-    private static final double LEFT_WHACK_POSITION = 0.4;
-    static final double RIGHT_NO_WHACK = 0.4;
-    static final double RIGHT_WHACK_POSITION = 0.6;
+    static final double FAR_LEFT_POSITION= 0;
+    //static final double FAR_LEFT_WHACK_POSITION = 0.2;
+    static final double LEFT_POSITION = 0.2;
+   // private static final double LEFT_WHACK_POSITION = 0.4;
+    static final double RIGHT_POSITION = 0.4;
+
+    static final double WHACK_DISTANCE = 0.1;
+   // static final double RIGHT_WHACK_POSITION = 0.6;
 
     public void sampling() {
         // Find the cube
@@ -33,29 +38,35 @@ public class sampling extends LinearOpMode {
         colorSensor.enableLed(true);
 
         // Unfold the jewel whip
-        whipUp.setPosition(RIGHT_NO_WHACK);
-        whipUp.setPosition(WHIP_DOWN_POSITION);
+        runtime.reset();
+        while (runtime.milliseconds() < WAIT_TIME) {
+            whipSide.setPosition(RIGHT_POSITION);
+        }
+        runtime.reset();
+        while (runtime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_DOWN_POSITION);
+        }
 
         if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
             // Knock off the cube once it has been found
-            whipSide.setPosition(FAR_LEFT_WHACK_POSITION);
-            whipSide.setPosition(FAR_LEFT_NO_WHACK);
+            whipSide.setPosition(FAR_LEFT_POSITION + WHACK_DISTANCE);
+            whipSide.setPosition(FAR_LEFT_POSITION);
             telemetry.addData("Cube", "Found Cube");
         } else {
             whipUp.setPosition(WHIP_UP_POSITION);
             if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
                 // Knock off the cube once it has been found
                 whipUp.setPosition(WHIP_DOWN_POSITION);
-                whipSide.setPosition(LEFT_WHACK_POSITION);
-                whipSide.setPosition(LEFT_NO_WHACK);
+                whipSide.setPosition(LEFT_POSITION + WHACK_DISTANCE);
+                whipSide.setPosition(LEFT_POSITION);
                 whipUp.setPosition(WHIP_UP_POSITION);
             } else {
                 whipUp.setPosition(WHIP_UP_POSITION);
                 if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
                     // Knock off the cube once it has been found
                     whipUp.setPosition(WHIP_DOWN_POSITION);
-                    whipSide.setPosition(RIGHT_WHACK_POSITION);
-                    whipSide.setPosition(RIGHT_NO_WHACK);
+                    whipSide.setPosition(RIGHT_POSITION + WHACK_DISTANCE);
+                    whipSide.setPosition(RIGHT_POSITION);
                     whipUp.setPosition(WHIP_UP_POSITION);
                 }
             }
