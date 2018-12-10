@@ -73,7 +73,9 @@ public class HardwareRagbotNoArm
     //public Servo claw = null; //The claw on the mineral arm
     public Servo holder = null; //The team marker holder
     public Servo pusher = null; //The team marker pusher
-    //public ColorSensor sensorColor = null;
+    public ColorSensor sensorColor = null;
+    public Servo whipUp = null;
+    public Servo whipSide = null;
     //public Servo hook = null; //The servo that hooks on to the lander
 
     //public static final double MID_SERVO       =  0.5 ;
@@ -211,6 +213,8 @@ public class HardwareRagbotNoArm
         //button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
         //hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
         holder  = hardwareMap.get(Servo.class, "markerholder");// Set the motors from their configurations
+        whipUp  = hardwareMap.get(Servo.class, "whipUp");// Set the motors from their configurations
+        whipSide  = hardwareMap.get(Servo.class, "whipSide");// Set the motors from their configurations
 
         //claw  = hardwareMap.get(Servo.class, "claw");// Set the motors from their configurations
 
@@ -254,6 +258,8 @@ public class HardwareRagbotNoArm
         // Initialize ALL installed servos.
         //hook.setPosition(0.5); //Set hook to center position
         holder.setPosition(0.5);
+        whipUp.setPosition(0);
+        whipSide.setPosition(0);
         //claw.setPosition(CLAW_OPEN); //Set claw to center position
     }
 }
