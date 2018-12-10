@@ -68,8 +68,8 @@ public class HardwareRagbotNoArm
     public DcMotor backRightDrive   = null;  //All 4 drive motors
     public DcMotor armL   = null; //The motor that lifts the arm
     public DcMotor armR  = null; //The motor that lifts the arm
-    //public DcMotor shoulder; //The "shoulder" of the mineral arm
-    //public DcMotor elbow; //The "elbow" of the mineral arm
+    public DcMotor shoulder; //The "shoulder" of the mineral arm
+    public DcMotor elbow; //The "elbow" of the mineral arm
     //public Servo claw = null; //The claw on the mineral arm
     public Servo holder = null; //The team marker holder
     public Servo pusher = null; //The team marker pusher
@@ -207,8 +207,8 @@ public class HardwareRagbotNoArm
         armL  = hardwareMap.get(DcMotor.class, "arml");
         armR  = hardwareMap.get(DcMotor.class, "armr");
         //sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
-        //shoulder  = hardwareMap.get(DcMotor.class, "shoulder");
-       // elbow  = hardwareMap.get(DcMotor.class, "elbow");
+        shoulder  = hardwareMap.get(DcMotor.class, "shoulder");
+        elbow  = hardwareMap.get(DcMotor.class, "elbow");
 
         //button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
         //hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
