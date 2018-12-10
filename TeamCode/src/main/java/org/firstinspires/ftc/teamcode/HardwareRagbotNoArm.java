@@ -172,10 +172,10 @@ public class HardwareRagbotNoArm
     }
 
     public void antiOverheatlockArm() {
-        int arml_pos = armL.getCurrentPosition();
+        //int arml_pos = armL.getCurrentPosition();
         int armr_pos = armR.getCurrentPosition();
 
-        if (armL.getCurrentPosition() < arml_pos || armR.getCurrentPosition() > armr_pos) {
+        if (armR.getCurrentPosition() < armr_pos) {
             armL.setPower(-0.5);
             armR.setPower(-0.5);
         }else {
