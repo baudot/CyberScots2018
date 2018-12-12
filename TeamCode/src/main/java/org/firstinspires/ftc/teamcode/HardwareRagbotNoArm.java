@@ -206,7 +206,7 @@ public class HardwareRagbotNoArm
         frontRightDrive = hardwareMap.get(DcMotor.class, "front-right");
         armL  = hardwareMap.get(DcMotor.class, "arml");
         armR  = hardwareMap.get(DcMotor.class, "armr");
-        //sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
+        sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
         //shoulder  = hardwareMap.get(DcMotor.class, "shoulder");
        // elbow  = hardwareMap.get(DcMotor.class, "elbow");
 
