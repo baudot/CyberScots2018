@@ -28,10 +28,43 @@ public class sampling extends LinearOpMode {
     static final double WHACK_DISTANCE = 0.1;
    // static final double RIGHT_WHACK_POSITION = 0.6;
 
+
+
+    public boolean cubeFound(ColorSensor colorSensor) {
+        return (colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue();
+    }
+
+    public void moveWhipTo(double pos) {
+        runtime.reset();
+        while (runtime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_UP_POSITION);
+        }
+        runtime.reset();
+        while (runtime.milliseconds() < WAIT_TIME) {
+            whipSide.setPosition(pos);
+        }
+        runtime.reset();
+        while (runtime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_DOWN_POSITION);
+        }
+    }
+
+    public void whack(double pos) {
+        runtime.reset();
+        while (runtime.milliseconds() < WAIT_TIME) {
+            whipSide.setPosition(pos + WHACK_DISTANCE);
+        }
+        runtime.reset();
+        while (runtime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_UP_POSITION);
+        }
+    }
+
     public void sampling() {
         // Find the cube
         ColorSensor colorSensor;
         colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
+
         telemetry.addData("Red", colorSensor.red());
         telemetry.addData("Green", colorSensor.green());
         telemetry.addData("Blue ", colorSensor.blue());
@@ -44,30 +77,27 @@ public class sampling extends LinearOpMode {
         }
         runtime.reset();
         while (runtime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_UP_POSITION);
+        }
+        runtime.reset();
+        while (runtime.milliseconds() < WAIT_TIME) {
+            whipSide.setPosition(FAR_LEFT_POSITION);
+        }
+        runtime.reset();
+        while (runtime.milliseconds() < WAIT_TIME) {
             whipUp.setPosition(WHIP_DOWN_POSITION);
         }
 
-        if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
-            // Knock off the cube once it has been found
-            whipSide.setPosition(FAR_LEFT_POSITION + WHACK_DISTANCE);
-            whipSide.setPosition(FAR_LEFT_POSITION);
-            telemetry.addData("Cube", "Found Cube");
+        if (cubeFound(colorSensor)) {
+            whack(FAR_LEFT_POSITION);
         } else {
-            whipUp.setPosition(WHIP_UP_POSITION);
-            if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
-                // Knock off the cube once it has been found
-                whipUp.setPosition(WHIP_DOWN_POSITION);
-                whipSide.setPosition(LEFT_POSITION + WHACK_DISTANCE);
-                whipSide.setPosition(LEFT_POSITION);
-                whipUp.setPosition(WHIP_UP_POSITION);
+           moveWhipTo(LEFT_POSITION);
+            if (cubeFound(colorSensor)) {
+                whack(LEFT_POSITION);
             } else {
-                whipUp.setPosition(WHIP_UP_POSITION);
-                if ((colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue()) {
-                    // Knock off the cube once it has been found
-                    whipUp.setPosition(WHIP_DOWN_POSITION);
-                    whipSide.setPosition(RIGHT_POSITION + WHACK_DISTANCE);
-                    whipSide.setPosition(RIGHT_POSITION);
-                    whipUp.setPosition(WHIP_UP_POSITION);
+                moveWhipTo(RIGHT_POSITION);
+                if (cubeFound(colorSensor)) {
+                    whack(RIGHT_POSITION);
                 }
             }
         }
