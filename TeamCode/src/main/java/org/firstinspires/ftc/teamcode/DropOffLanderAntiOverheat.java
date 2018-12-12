@@ -75,13 +75,14 @@ public class DropOffLanderAntiOverheat extends LinearOpMode {
     int                  current_armL_pos        = 0;
     int                  current_armR_pos        = 0;
 
-    public void lockArmInPlace() {
-        robot.antiOverheatlockArm();
+    public void lockArmInPlace(int pos) {
+        robot.antiOverheatLockArm(pos);
     }
 
     public synchronized void waitForStartWhileHanging() {
+        int startPos = robot.armR.getCurrentPosition();
         while (!isStarted()) {
-            lockArmInPlace();
+            lockArmInPlace(startPos);
             synchronized (this) {
                 try {
                     this.wait();
@@ -101,8 +102,7 @@ public class DropOffLanderAntiOverheat extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-
+        robot.setTelemetry(telemetry);
         waitForStartWhileHanging();
-
     }
 }

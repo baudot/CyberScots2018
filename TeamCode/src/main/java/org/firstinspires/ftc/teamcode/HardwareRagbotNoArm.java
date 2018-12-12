@@ -35,6 +35,9 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * This is NOT an opmode.
@@ -79,6 +82,8 @@ public class HardwareRagbotNoArm
     //public Servo hook = null; //The servo that hooks on to the lander
 
     //public static final double MID_SERVO       =  0.5 ;
+
+    Telemetry telemetry = null;
 
 
     /* local OpMode members. */
@@ -173,13 +178,24 @@ public class HardwareRagbotNoArm
         armR.setPower(0.5);
     }
 
-    public void antiOverheatlockArm() {
-        //int arml_pos = armL.getCurrentPosition();
-        int armr_pos = armR.getCurrentPosition();
+    public void setTelemetry(Telemetry telemetry) {
+        this.telemetry = telemetry;
+    }
 
-        if (armR.getCurrentPosition() < armr_pos) {
-            armL.setPower(-0.5);
-            armR.setPower(-0.5);
+    public void antiOverheatLockArm(int pos) {
+        //int arml_pos = armL.getCurrentPosition();
+        //int armr_pos = armR.getCurrentPosition();
+
+        if (armR.getCurrentPosition() < pos) {
+            double power = Range.clip(Math.abs(pos - armR.getCurrentPosition()) / 50.0, 0, 1);
+            if (telemetry != null) {
+                telemetry.addData("Power: ", power);
+                telemetry.addData("Distance from pos: ", pos - armR.getCurrentPosition());
+                telemetry.addData("Current pos: ", armR.getCurrentPosition());
+                telemetry.update();
+            }
+            armL.setPower(power);
+            armR.setPower(power);
         }else {
             armL.setPower(0);
             armR.setPower(0);
