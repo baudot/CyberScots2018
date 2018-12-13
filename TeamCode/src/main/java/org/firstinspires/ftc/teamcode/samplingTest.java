@@ -15,12 +15,12 @@ public class samplingTest extends LinearOpMode {
     HardwareRagbotNoArm robot = new HardwareRagbotNoArm();
 
     public void sampling() {
-        // Find the cube
+        //Find the cube
         telemetry.addData("Red", robot.sensorColor.red());
         telemetry.addData("Green", robot.sensorColor.green());
         telemetry.addData("Blue ", robot.sensorColor.blue());
         robot.sensorColor.enableLed(true);
-        if ((robot.sensorColor.red() + robot.sensorColor.green()) / 2 > robot.sensorColor.blue() + 10) {
+        if ((robot.sensorColor.red() + robot.sensorColor.green()) / 2 > robot.sensorColor.blue() + 15) {
             telemetry.addData("Cube", "Found Cube");
         }
         telemetry.update();
