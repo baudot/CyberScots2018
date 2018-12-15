@@ -134,9 +134,9 @@ public class RedCraterCode extends LinearOpMode {
         robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        robot.armL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //robot.armL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        robot.armR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //robot.armR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addData("zero power l:", robot.armL.getZeroPowerBehavior());
         telemetry.addData("zero power r:", robot.armR.getZeroPowerBehavior());
@@ -157,17 +157,17 @@ public class RedCraterCode extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        robot.dropOffLander();
+        robot.dropOffLander(this, telemetry);
         //drive to the sampling position
-        vpos.driveToPoint(-600,-600);
+        vpos.driveToPoint(-600,-600, this);
         //do the sampling of the minerals
-        robot.sampling();
+        //robot.sampling();
         //drive to the depot
-        vpos.driveToPoint(0, -900);
-        vpos.driveToPoint (1450,-1450);
+        vpos.driveToPoint(0, -900, this);
+        vpos.driveToPoint (1500,-1500, this);
         dropOffMarker();
         //drive to the crater
-        vpos.driveToPoint (-1450,-1450);
+        vpos.driveToPoint (-1500,-1500, this);
         //park in the craters
     }
 

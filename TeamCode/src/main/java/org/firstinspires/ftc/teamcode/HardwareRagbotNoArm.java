@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -187,7 +189,8 @@ public class HardwareRagbotNoArm
 
     public void armDrive(double speed,
                          double degrees,
-                         double timeoutS) {
+                         double timeoutS,
+                         LinearOpMode opmode) {
         int newarmLTarget;
         int newarmRTarget;
 
@@ -216,7 +219,8 @@ public class HardwareRagbotNoArm
         // always end the motion as soon as possible.
         // However, if you require that BOTH motors have finished their moves before the robot continues
         // onto the next step, use (isBusy() || isBusy()) in the loop test.
-        while ((runtime.seconds() < timeoutS) &&
+        while (opmode.opModeIsActive() &&
+                (runtime.seconds() < timeoutS) &&
                 (frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy())) {
 
             // Display it for the driver.
@@ -224,6 +228,7 @@ public class HardwareRagbotNoArm
             telemetry.addData("Path2",  "Running at %7d :%7d",
                     armL.getCurrentPosition(),
                     armR.getCurrentPosition());
+            telemetry.addLine("In drop off loop");
             telemetry.update();
         }
 
@@ -242,7 +247,8 @@ public class HardwareRagbotNoArm
 
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
-                             double timeoutS) {
+                             double timeoutS,
+                             LinearOpMode opmode) {
         int newFrontLeftTarget;
         int newFrontRightTarget;
 
@@ -282,7 +288,8 @@ public class HardwareRagbotNoArm
         // always end the motion as soon as possible.
         // However, if you require that BOTH motors have finished their moves before the robot continues
         // onto the next step, use (isBusy() || isBusy()) in the loop test.
-        while ((encoderTimer.seconds() < timeoutS) &&
+        while (opmode.opModeIsActive() &&
+                (encoderTimer.seconds() < timeoutS) &&
                 (frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy())) {
 
            /* // Display it for the driver.
@@ -290,7 +297,9 @@ public class HardwareRagbotNoArm
             telemetry.addData("Path2",  "Running at %7d :%7d",
                     leftDrive.getCurrentPosition(),
                     rightDrive.getCurrentPosition());
+
             telemetry.update();*/
+           opmode.telemetry.addLine("In encoder drive loop");
         }
 
         // Stop all motion;
@@ -341,14 +350,24 @@ public class HardwareRagbotNoArm
         armL.setPower(0.3);
     }
 
-    public void dropOffLander() {
+    public void dropOffLander(LinearOpMode opmode, Telemetry telemetry) {
         armL.setPower(0);
         armR.setPower(0);
-        armDrive (0.5, 30.0, 2.0);
-        moveTime(0,0, 1000);
-        moveTime(-0.5, 0, 200);
-        moveTime(0,-0.5,5000);
-    }
+        //armDrive (0.5, 100.0, 2.0, opmode);
+        moveTime(0,0, 2000, opmode, telemetry);
+        moveTime(-0.5, 0, 100, opmode, telemetry);
+        moveTime(0,-1,250, opmode,  telemetry);
+        moveTime(0,1,250, opmode,  telemetry);
+        moveTime(0,-1,250, opmode,  telemetry);
+        moveTime(-0.5, 0, 100, opmode, telemetry);
+        moveTime(0,1,250, opmode,  telemetry);
+        moveTime(0,-1,250, opmode,  telemetry);
+        moveTime(0,1,250, opmode,  telemetry);
+        moveTime(0,-1,250, opmode,  telemetry);
+        moveTime(0,1,250, opmode,  telemetry);
+        moveTime(0,-1,250, opmode,  telemetry);
+        moveTime(0,1,250, opmode,  telemetry);
+        moveTime(0,-1,1000, opmode,  telemetry);}
 
     public void unlockArm() {
         armL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -372,7 +391,7 @@ public class HardwareRagbotNoArm
         backRightDrive.setPower(rightPower);
     }
 
-    public void moveTime(double forward, double turn, double time) {
+    public void moveTime(double forward, double turn, double time, LinearOpMode opmode, Telemetry telemetry) {
         double leftPower = forward;
         double rightPower = forward;
         leftPower += turn;
@@ -386,7 +405,8 @@ public class HardwareRagbotNoArm
         }
         ElapsedTime movementTime = new ElapsedTime();
         movementTime.reset();
-        while (movementTime.milliseconds() < time) {
+        while (movementTime.milliseconds() < time && opmode.opModeIsActive()) {
+            telemetry.addLine("In moveTime loop");
             frontLeftDrive.setPower(leftPower);
             backLeftDrive.setPower(leftPower);
             frontRightDrive.setPower(rightPower);
@@ -462,8 +482,8 @@ public class HardwareRagbotNoArm
         // Initialize ALL installed servos.
         //hook.setPosition(0.5); //Set hook to center position
         holder.setPosition(0.5);
-        whipUp.setPosition(0);
-        whipSide.setPosition(0);
+        //whipUp.setPosition(0);
+        //whipSide.setPosition(0);
         //claw.setPosition(CLAW_OPEN); //Set claw to center position
     }
 

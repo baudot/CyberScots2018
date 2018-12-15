@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -314,18 +315,17 @@ public class VuforiaPos
         robot.backRightDrive.setPower(rightPower);
     }
 
-
     public void init() {
         vuforiaInit();
     }
 
-    public void driveToPoint(double xDestination, double yDestination) {
+    public void driveToPoint(double xDestination, double yDestination, LinearOpMode opmode) {
         LocRot startLocRot = lastlr;
         averageTime.reset();
-        while (averageTime.milliseconds() < TIME_TO_AVERAGE) {
+        while (averageTime.milliseconds() < TIME_TO_AVERAGE && opmode.opModeIsActive()) {
             updatePosition();
 
-            if (lastlr != null && lrIsValid) {
+            if (lastlr != null/* && lrIsValid*/) {
                 telemetry.addLine("We think lastlr is not null and is valid");
                 telemetry.update();
                 //startLocRot.location.put(0,  (startLocRot.location.get(0) + lastlr.location.get(0))/2);
@@ -339,36 +339,40 @@ public class VuforiaPos
                 telemetry.addLine("OOOOOF: No poster found!");
                 telemetry.update();
                 averageTime.reset();
-                move(0, -0.4);
+                robot.moveTime(0.0, -0.5, 1000, opmode, telemetry);
             }
         }
 
+        if (lastlr != null) {
+            telemetry.addLine("Wrapping up locrot handling.");
+            telemetry.update();
 
-        telemetry.addLine("Wrapping up locrot handling.");
-        telemetry.update();
-
-        double dx = startLocRot.location.get(0) - xDestination;
-        double dy = startLocRot.location.get(1) - yDestination;
-        //double dx = 0.1;
-        //double dy = 0.1;
+            double dx = startLocRot.location.get(0) - xDestination;
+            double dy = startLocRot.location.get(1) - yDestination;
+            //double dx = 0.1;
+            //double dy = 0.1;
 
 
-        if (dy == 0) {
-            dy = 1;
+            if (dy == 0) {
+                dy = 1;
+            }
+
+            double angleToTurn = Math.atan(dx/dy);
+
+            if (dy < 0) {
+                angleToTurn += Math.PI;
+            }
+
+            double fractionToTurn = angleToTurn / (Math.PI * 2);
+
+            robot.encoderDrive(HardwareRagbotNoArm.TURN_SPEED, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * fractionToTurn, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * -fractionToTurn, 3, opmode);
+
+            double driveDistance = Math.sqrt((dx * dx) + (dy * dy)) / mmPerInch;
+
+            robot.encoderDrive(HardwareRagbotNoArm.DRIVE_SPEED, driveDistance, driveDistance, 5, opmode);
+        }else {
+            telemetry.addLine("Something is really wrong, lastlr is null");
+            telemetry.update();
         }
-
-        double angleToTurn = Math.atan(dx/dy);
-
-        if (dy < 0) {
-            angleToTurn += Math.PI;
-        }
-
-        double fractionToTurn = angleToTurn / (Math.PI * 2);
-
-        robot.encoderDrive(HardwareRagbotNoArm.TURN_SPEED, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * fractionToTurn, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * -fractionToTurn, 3);
-
-        double driveDistance = Math.sqrt((dx * dx) + (dy * dy)) / mmPerInch;
-
-        robot.encoderDrive(HardwareRagbotNoArm.DRIVE_SPEED, driveDistance, driveDistance, 5);
     }
 }

@@ -146,7 +146,7 @@ public class DropOffLanderAntiOverheat extends LinearOpMode {
         robot.armR.setPower(0);
         armDrive (0.5, 30.0, 2.0);
         sleep(1000);
-        robot.moveTime(-0.5, 0, 200);
-        robot.moveTime(0,-0.5,5000);
+        robot.moveTime(-0.5, 0, 200, this, telemetry);
+        robot.moveTime(0,-0.5,5000, this, telemetry);
     }
 }

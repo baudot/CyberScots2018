@@ -240,9 +240,8 @@ public class FourWheelDrive extends LinearOpMode {
             }
 
             if (armLocked) {
-                robot.lockArmInPlace();
+                robot.antiOverheatLockArm();
             }else {
-                robot.unlockArm();
                 robot.armL.setPower(motorPower); //Move the arm based on the joystick
                 robot.armR.setPower(motorPower); //Move the arm based on the joystick
             }
@@ -326,11 +325,19 @@ public class FourWheelDrive extends LinearOpMode {
                 motorPowerR -= Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED; //Use lifting mode speed variables and exponents
             }
 
+            double maxPower = Math.max(motorPowerL, motorPowerR);
+            if (maxPower > 1) {
+                motorPowerL /= maxPower;
+                motorPowerR /= maxPower;
+            }
 
-            motorPowerL = Range.clip(motorPowerL, -1, 1);
-            motorPowerR = Range.clip(motorPowerR, -1, 1); //Make sure the motors aren't going faster than they can
 
+            //motorPowerL = Range.clip(motorPowerL, -1, 1);
+            //motorPowerR = Range.clip(motorPowerR, -1, 1); //Make sure the motors aren't going faster than they can
 
+            telemetry.addData("Left Speed: ", motorPowerL);
+            telemetry.addData("Right Speed: ", motorPowerR);
+            telemetry.update();
             robot.frontLeftDrive.setPower(motorPowerL);
             robot.frontRightDrive.setPower(motorPowerR);
             robot.backLeftDrive.setPower(motorPowerL);
