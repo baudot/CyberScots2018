@@ -157,16 +157,16 @@ public class BlueCraterCode extends LinearOpMode {
 
         robot.dropOffLander();
         //drive to the sampling position
-        vpos.driveToPoint(900,900);
+        vpos.driveToPoint(600,600);
         //do the sampling of the minerals
         robot.sampling();
         //drive to the depot
-        vpos.driveToPoint (1500,-1500);
+        vpos.driveToPoint(0, 900);
+        vpos.driveToPoint (1450,-1450);
         dropOffMarker();
         //drive to the crater
-        vpos.driveToPoint (1500,1500);
+        vpos.driveToPoint (1450,1450);
         //park in the crater
-        parkInCrater();
     }
 
     /*
