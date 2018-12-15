@@ -61,7 +61,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="RedDepotAutonomus", group="Ragbot")
+@Autonomous(name="RedDepotCode", group="Ragbot")
 public class RedDepotAutonomusCode extends LinearOpMode {
  
     /* Declare OpMode members. */
@@ -151,32 +151,25 @@ public class RedDepotAutonomusCode extends LinearOpMode {
         //        robot.backRightDrive.getCurrentPosition());
         //telemetry.update();
 
-        current_armL_pos = robot.armL.getCurrentPosition();
-        current_armR_pos = robot.armR.getCurrentPosition();
-
         vpos.init();
-
+        robot.antiOverheatLockArm();
         // hold onto the team marker
         // Wait for the game to start (driver presses PLAY)
-        waitForStartWhileHanging();
+        waitForStart();
 
-        //This is the DOL
-        armDrive (0.5, 30.0, 2.0);
-        sleep(2000);
-        robot.armL.setPower(0);
-        robot.armR.setPower(0);
-        //wiggle off the hook
-        encoderDrive(DRIVE_SPEED,-5, -5, 0.25);
+        robot.dropOffLander();
+
         //drive to the sampling position
-        vpos.driveToPoint(600,-600);
+        vpos.driveToPoint(900,-900);
         //do the sampling of the minerals
+        robot.sampling();
         //drive to the depot
         vpos.driveToPoint (1500,-1500);
         dropOffMarker();
         //drive to the crater
         vpos.driveToPoint (1500,1500);
         //park in the crater
-
+        parkInCrater();
     }
 
     /*

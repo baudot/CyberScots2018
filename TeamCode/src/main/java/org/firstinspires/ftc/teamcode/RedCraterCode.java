@@ -63,7 +63,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="RedCraterCode", group="Ragbot")
 public class RedCraterCode extends LinearOpMode {
- 
+
     /* Declare OpMode members. */
     HardwareRagbotNoArm         robot   = new HardwareRagbotNoArm();   // Use a Pushbot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
@@ -83,7 +83,7 @@ public class RedCraterCode extends LinearOpMode {
     int                  current_armL_pos        = 0;
     int                  current_armR_pos        = 0;
 
-    VuforiaPos   vpos                    = new VuforiaPos(robot, telemetry);
+    VuforiaPos   vpos                    = null;
 
     public void lockArmInPlace() {
         robot.armL.setTargetPosition(current_armL_pos);
@@ -118,7 +118,8 @@ public class RedCraterCode extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-
+        vpos = new VuforiaPos(robot, telemetry);
+        vpos.init();
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
@@ -149,31 +150,25 @@ public class RedCraterCode extends LinearOpMode {
         //        robot.backRightDrive.getCurrentPosition());
         //telemetry.update();
 
-        current_armL_pos = robot.armL.getCurrentPosition();
-        current_armR_pos = robot.armR.getCurrentPosition();
+        robot.antiOverheatLockArm();
 
 
         // hold onto the team marker
         // Wait for the game to start (driver presses PLAY)
-        waitForStartWhileHanging();
+        waitForStart();
 
-        //This is the DOL
-        armDrive (0.5, 30.0, 2.0);
-        sleep(2000);
-        robot.armL.setPower(0);
-        robot.armR.setPower(0);
-        //wiggle off the hook
-        encoderDrive(DRIVE_SPEED,-5, -5, 0.25);
+        robot.dropOffLander();
         //drive to the sampling position
         vpos.driveToPoint(900,900);
         //do the sampling of the minerals
+        robot.sampling();
         //drive to the depot
         vpos.driveToPoint (1500,-1500);
         dropOffMarker();
         //drive to the crater
         vpos.driveToPoint (-1500,-1500);
         //park in the craters
-
+        parkInCrater();
     }
 
     /*

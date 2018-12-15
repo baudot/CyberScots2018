@@ -99,19 +99,7 @@ public class VuforiaDriveTest extends LinearOpMode {
     VuforiaPos vpos = null;
     HardwareRagbotNoArm robot = null;
 
-    public void move(double forward, double turn) {
-        double leftPower = forward;
-        double rightPower = forward;
-        leftPower += turn;
-        rightPower -= turn;
-        leftPower = Range.clip(leftPower, -1, 1);
-        rightPower = Range.clip(rightPower, -1, 1);
 
-        robot.frontLeftDrive.setPower(leftPower);
-        robot.backLeftDrive.setPower(leftPower);
-        robot.frontRightDrive.setPower(rightPower);
-        robot.backRightDrive.setPower(rightPower);
-    }
 
     @Override public void runOpMode() {
         robot = new HardwareRagbotNoArm();   // Use a Pushbot's hardware

@@ -53,15 +53,30 @@ public class HardwareRagbotNoArm
 
     static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
+    static final double     ARM_DRIVE_GEAR_REDUCTION    = 6.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.14159265);
+    static final double     COUNTS_PER_DEGREE         = (COUNTS_PER_MOTOR_REV * ARM_DRIVE_GEAR_REDUCTION)
+            / 360;
 
     static final double WHEEL_CIRCLE_RADIUS = 17; //The radius of the circle going around all of the wheels with the center of the robot in the middle
     static final double FULL_CIRCLE_INCHES = WHEEL_CIRCLE_RADIUS * 2 * 3.14159265;
 
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
+
+    static final double WAIT_TIME = 300;
+
+    static final double WHIP_UP_POSITION = 0;
+    static final double WHIP_DOWN_POSITION = 0.5;
+    static final double FAR_LEFT_POSITION= 0;
+    //static final double FAR_LEFT_WHACK_POSITION = 0.2;
+    static final double LEFT_POSITION = 0.2;
+    // private static final double LEFT_WHACK_POSITION = 0.4;
+    static final double RIGHT_POSITION = 0.4;
+
+    static final double WHACK_DISTANCE = 0.1;
 
     /* Public OpMode members. */
     public DigitalChannel button = null;  // Device Object
@@ -85,6 +100,7 @@ public class HardwareRagbotNoArm
 
     Telemetry telemetry = null;
 
+    private ElapsedTime whipTime = new ElapsedTime();
 
     /* local OpMode members. */
     HardwareMap hardwareMap           =  null;
@@ -95,6 +111,134 @@ public class HardwareRagbotNoArm
     public HardwareRagbotNoArm(){
 
     }
+
+    public boolean cubeFound(ColorSensor colorSensor) {
+        return (colorSensor.red() + colorSensor.green()) / 2 > colorSensor.blue();
+    }
+
+    public void moveWhipTo(double pos) {
+        whipTime.reset();
+        while (whipTime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_UP_POSITION);
+        }
+        whipTime.reset();
+        while (whipTime.milliseconds() < WAIT_TIME) {
+            whipSide.setPosition(pos);
+        }
+        whipTime.reset();
+        while (whipTime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_DOWN_POSITION);
+        }
+    }
+
+    public void whack(double pos) {
+        whipTime.reset();
+        while (whipTime.milliseconds() < WAIT_TIME) {
+            whipSide.setPosition(pos + WHACK_DISTANCE);
+        }
+        whipTime.reset();
+        while (whipTime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_UP_POSITION);
+        }
+    }
+
+    public void sampling() {
+        // Find the cube
+        ColorSensor colorSensor;
+        colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
+
+        telemetry.addData("Red", colorSensor.red());
+        telemetry.addData("Green", colorSensor.green());
+        telemetry.addData("Blue ", colorSensor.blue());
+        colorSensor.enableLed(true);
+
+        // Unfold the jewel whip
+        whipTime.reset();
+        while (whipTime.milliseconds() < WAIT_TIME) {
+            whipSide.setPosition(RIGHT_POSITION);
+        }
+        whipTime.reset();
+        while (whipTime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_UP_POSITION);
+        }
+        whipTime.reset();
+        while (whipTime.milliseconds() < WAIT_TIME) {
+            whipSide.setPosition(FAR_LEFT_POSITION);
+        }
+        whipTime.reset();
+        while (whipTime.milliseconds() < WAIT_TIME) {
+            whipUp.setPosition(WHIP_DOWN_POSITION);
+        }
+
+        if (cubeFound(colorSensor)) {
+            whack(FAR_LEFT_POSITION);
+        } else {
+            moveWhipTo(LEFT_POSITION);
+            if (cubeFound(colorSensor)) {
+                whack(LEFT_POSITION);
+            } else {
+                moveWhipTo(RIGHT_POSITION);
+                if (cubeFound(colorSensor)) {
+                    whack(RIGHT_POSITION);
+                }
+            }
+        }
+    }
+
+    public void armDrive(double speed,
+                         double degrees,
+                         double timeoutS) {
+        int newarmLTarget;
+        int newarmRTarget;
+
+        ElapsedTime runtime = new ElapsedTime();
+
+        // Determine new target position, and pass to motor controller
+        newarmLTarget = armL.getCurrentPosition() + (int)(degrees * COUNTS_PER_DEGREE);
+        newarmRTarget = armR.getCurrentPosition() + (int)(-degrees * COUNTS_PER_DEGREE);
+
+        armL.setTargetPosition(newarmLTarget);
+        armR.setTargetPosition(newarmRTarget);
+
+        // Turn On RUN_TO_POSITION
+        armL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // reset the timeout time and start motion.
+        //repeated four times, for four wheel drive
+        runtime.reset();
+        armL.setPower(Math.abs(speed));
+        armR.setPower(Math.abs(speed));
+
+        // keep looping while we are still active, and there is time left, and both motors are running.
+        // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+        // its target position, the motion will stop.  This is "safer" in the event that the robot will
+        // always end the motion as soon as possible.
+        // However, if you require that BOTH motors have finished their moves before the robot continues
+        // onto the next step, use (isBusy() || isBusy()) in the loop test.
+        while ((runtime.seconds() < timeoutS) &&
+                (frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("Path1",  "Running to %7d :%7d", newarmLTarget,  newarmRTarget);
+            telemetry.addData("Path2",  "Running at %7d :%7d",
+                    armL.getCurrentPosition(),
+                    armR.getCurrentPosition());
+            telemetry.update();
+        }
+
+        // Stop all motion;
+        armL.setPower(0);
+        armR.setPower(0);
+
+        // Turn off RUN_TO_POSITION
+        armL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //  sleep(250);   // optional pause after each move
+    }
+
+
 
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
@@ -182,24 +326,28 @@ public class HardwareRagbotNoArm
         this.telemetry = telemetry;
     }
 
-    public void antiOverheatLockArm(int pos) {
-        //int arml_pos = armL.getCurrentPosition();
-        //int armr_pos = armR.getCurrentPosition();
-
-        if (armR.getCurrentPosition() < pos) {
-            double power = Range.clip(Math.abs(pos - armR.getCurrentPosition()) / 50.0, 0, 1);
-            if (telemetry != null) {
-                telemetry.addData("Power: ", power);
-                telemetry.addData("Distance from pos: ", pos - armR.getCurrentPosition());
-                telemetry.addData("Current pos: ", armR.getCurrentPosition());
-                telemetry.update();
-            }
-            armL.setPower(power);
-            armR.setPower(power);
-        }else {
-            armL.setPower(0);
-            armR.setPower(0);
+    public void antiOverheatLockArm() {
+        /*double power = Range.clip(pos - armR.getCurrentPosition() / 90.0, 0, 0.5); // 70, 30, 90, 20
+        if (telemetry != null) {
+            telemetry.addData("Power: ", power);
+            telemetry.addData("Distance from pos: ", pos - armR.getCurrentPosition());
+            telemetry.addData("Current pos: ", armR.getCurrentPosition());
+            telemetry.update();
         }
+        armL.setPower(power);
+        armR.setPower(power);*/
+
+        armR.setPower(0.3);
+        armL.setPower(0.3);
+    }
+
+    public void dropOffLander() {
+        armL.setPower(0);
+        armR.setPower(0);
+        armDrive (0.5, 30.0, 2.0);
+        moveTime(0,0, 1000);
+        moveTime(-0.5, 0, 200);
+        moveTime(0,-0.5,5000);
     }
 
     public void unlockArm() {
@@ -208,6 +356,46 @@ public class HardwareRagbotNoArm
 
         armL.setPower(0);
         armR.setPower(0);
+    }
+
+    public void move(double forward, double turn) {
+        double leftPower = forward;
+        double rightPower = forward;
+        leftPower += turn;
+        rightPower -= turn;
+        leftPower = Range.clip(leftPower, -1, 1);
+        rightPower = Range.clip(rightPower, -1, 1);
+
+        frontLeftDrive.setPower(leftPower);
+        backLeftDrive.setPower(leftPower);
+        frontRightDrive.setPower(rightPower);
+        backRightDrive.setPower(rightPower);
+    }
+
+    public void moveTime(double forward, double turn, double time) {
+        double leftPower = forward;
+        double rightPower = forward;
+        leftPower += turn;
+        rightPower -= turn;
+        double largest = Math.max(Math.abs(leftPower), Math.abs(rightPower));
+        //leftPower = Range.clip(leftPower, -1, 1);
+        //rightPower = Range.clip(rightPower, -1, 1);
+        if (largest > 1) {
+            leftPower /= largest;
+            rightPower /= largest;
+        }
+        ElapsedTime movementTime = new ElapsedTime();
+        movementTime.reset();
+        while (movementTime.milliseconds() < time) {
+            frontLeftDrive.setPower(leftPower);
+            backLeftDrive.setPower(leftPower);
+            frontRightDrive.setPower(rightPower);
+            backRightDrive.setPower(rightPower);
+        }
+        frontLeftDrive.setPower(0);
+        backLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        backRightDrive.setPower(0);
     }
 
     /* Initialize standard Hardware interfaces */
@@ -278,5 +466,6 @@ public class HardwareRagbotNoArm
         whipSide.setPosition(0);
         //claw.setPosition(CLAW_OPEN); //Set claw to center position
     }
-}
 
+
+}

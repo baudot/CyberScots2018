@@ -75,22 +75,60 @@ public class DropOffLanderAntiOverheat extends LinearOpMode {
     int                  current_armL_pos        = 0;
     int                  current_armR_pos        = 0;
 
-    public void lockArmInPlace(int pos) {
-        robot.antiOverheatLockArm(pos);
-    }
 
-    public synchronized void waitForStartWhileHanging() {
-        int startPos = robot.armR.getCurrentPosition();
-        while (!isStarted()) {
-            lockArmInPlace(startPos);
-            synchronized (this) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
+    public void armDrive(double speed,
+                         double degrees,
+                         double timeoutS) {
+        int newarmLTarget;
+        int newarmRTarget;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newarmLTarget = robot.armL.getCurrentPosition() + (int)(degrees * COUNTS_PER_DEGREE);
+            newarmRTarget = robot.armR.getCurrentPosition() + (int)(-degrees * COUNTS_PER_DEGREE);
+
+            robot.armL.setTargetPosition(newarmLTarget);
+            robot.armR.setTargetPosition(newarmRTarget);
+
+            // Turn On RUN_TO_POSITION
+            robot.armL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.armR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            //repeated four times, for four wheel drive
+            runtime.reset();
+            robot.armL.setPower(Math.abs(speed));
+            robot.armR.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.frontLeftDrive.isBusy() && robot.frontRightDrive.isBusy() && robot.backLeftDrive.isBusy() && robot.backRightDrive.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", newarmLTarget,  newarmRTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        robot.armL.getCurrentPosition(),
+                        robot.armR.getCurrentPosition());
+                telemetry.update();
             }
+
+            // Stop all motion;
+            robot.armL.setPower(0);
+            robot.armR.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.armL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.armR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
         }
     }
 
@@ -103,6 +141,12 @@ public class DropOffLanderAntiOverheat extends LinearOpMode {
          */
         robot.init(hardwareMap);
         robot.setTelemetry(telemetry);
-        waitForStartWhileHanging();
+        waitForStart();
+        robot.armL.setPower(0);
+        robot.armR.setPower(0);
+        armDrive (0.5, 30.0, 2.0);
+        sleep(1000);
+        robot.moveTime(-0.5, 0, 200);
+        robot.moveTime(0,-0.5,5000);
     }
 }
