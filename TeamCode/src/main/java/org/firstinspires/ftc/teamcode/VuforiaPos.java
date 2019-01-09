@@ -326,6 +326,9 @@ public class VuforiaPos
             updatePosition();
 
             if (lastlr != null/* && lrIsValid*/) {
+                if (startLocRot == null) {
+                    startLocRot = lastlr;
+                }
                 telemetry.addLine("We think lastlr is not null and is valid");
                 telemetry.update();
                 //startLocRot.location.put(0,  (startLocRot.location.get(0) + lastlr.location.get(0))/2);
@@ -343,15 +346,25 @@ public class VuforiaPos
             }
         }
 
+        robot.stopMoving();
+
+        telemetry.addLine("Done with getting position");
+        telemetry.update();
+        opmode.sleep(3000);
+
         if (lastlr != null) {
             telemetry.addLine("Wrapping up locrot handling.");
             telemetry.update();
 
             double dx = startLocRot.location.get(0) - xDestination;
             double dy = startLocRot.location.get(1) - yDestination;
+
+            telemetry.addData("dx: ", dx);
+            telemetry.addData("dy: ", dy);
+            telemetry.update();
+            opmode.sleep(5000);
             //double dx = 0.1;
             //double dy = 0.1;
-
 
             if (dy == 0) {
                 dy = 1;
@@ -365,9 +378,19 @@ public class VuforiaPos
 
             double fractionToTurn = angleToTurn / (Math.PI * 2);
 
+            telemetry.addData("Angle to turn: ", angleToTurn);
+            telemetry.addData("Fraction of whole circle: " , fractionToTurn);
+            telemetry.update();
+            opmode.sleep(5000);
+
             robot.encoderDrive(HardwareRagbotNoArm.TURN_SPEED, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * fractionToTurn, HardwareRagbotNoArm.FULL_CIRCLE_INCHES * -fractionToTurn, 3, opmode);
 
             double driveDistance = Math.sqrt((dx * dx) + (dy * dy)) / mmPerInch;
+
+            telemetry.addLine("Done turning");
+            telemetry.addData("Distance (in): ", driveDistance);
+            telemetry.update();
+            opmode.sleep(4000);
 
             robot.encoderDrive(HardwareRagbotNoArm.DRIVE_SPEED, driveDistance, driveDistance, 5, opmode);
         }else {

@@ -258,29 +258,32 @@ public class HardwareRagbotNoArm
         // Ensure that the opmode is still active
 
         // Determine new target position, and jack to motor controller
-        newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+        //newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
         newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
 
         newBackLeftTarget = backLeftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-        newBackRightTarget = backRightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+        //newBackRightTarget = backRightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
 
-        frontLeftDrive.setTargetPosition(newFrontLeftTarget);
+        /*frontLeftDrive.setTargetPosition(newFrontLeftTarget);
         frontRightDrive.setTargetPosition(newFrontRightTarget);
         backLeftDrive.setTargetPosition(newBackLeftTarget);
-        backRightDrive.setTargetPosition(newBackRightTarget);
+        backRightDrive.setTargetPosition(newBackRightTarget);*/
 
         // Turn On RUN_TO_POSITION
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        double leftSpeed = (leftInches < 0) ? -speed : speed;
+        double rightSpeed = (rightInches < 0) ? -speed : speed;
 
         // reset the timeout time and start motion.
         encoderTimer.reset();
-        frontLeftDrive.setPower(Math.abs(speed));
-        frontRightDrive.setPower(Math.abs(speed));
-        backLeftDrive.setPower(Math.abs(speed));
-        backRightDrive.setPower(Math.abs(speed));
+        frontLeftDrive.setPower(leftSpeed);
+        frontRightDrive.setPower(rightSpeed);
+        backLeftDrive.setPower(leftSpeed);
+        backRightDrive.setPower(rightSpeed);
 
         // keep looping while we are still active, and there is time left, and both motors are running.
         // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -289,17 +292,22 @@ public class HardwareRagbotNoArm
         // However, if you require that BOTH motors have finished their moves before the robot continues
         // onto the next step, use (isBusy() || isBusy()) in the loop test.
         while (opmode.opModeIsActive() &&
-                (encoderTimer.seconds() < timeoutS) &&
-                (frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy())) {
+                (leftInches >= 0 || backLeftDrive.getCurrentPosition() > newBackLeftTarget) &&
+                (leftInches < 0 || backLeftDrive.getCurrentPosition() < newBackLeftTarget) &&
+                (rightInches >= 0 || frontRightDrive.getCurrentPosition() > newFrontRightTarget) &&
+                (rightInches < 0 || frontRightDrive.getCurrentPosition() < newFrontRightTarget)) {
 
-           /* // Display it for the driver.
-            telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-            telemetry.addData("Path2",  "Running at %7d :%7d",
-                    leftDrive.getCurrentPosition(),
-                    rightDrive.getCurrentPosition());
+            if ((leftInches < 0 || backLeftDrive.getCurrentPosition() > newBackLeftTarget) &&
+                    (leftInches >= 0 || backLeftDrive.getCurrentPosition() < newBackLeftTarget)) {
+                frontLeftDrive.setPower(0);
+                backLeftDrive.setPower(0);
+            }
 
-            telemetry.update();*/
-           opmode.telemetry.addLine("In encoder drive loop");
+            if ((rightInches < 0 || frontRightDrive.getCurrentPosition() > newFrontRightTarget) &&
+                    (rightInches > 0 || frontRightDrive.getCurrentPosition() < newFrontRightTarget)) {
+                frontRightDrive.setPower(0);
+                backRightDrive.setPower(0);
+            }
         }
 
         // Stop all motion;
@@ -389,6 +397,13 @@ public class HardwareRagbotNoArm
         backLeftDrive.setPower(leftPower);
         frontRightDrive.setPower(rightPower);
         backRightDrive.setPower(rightPower);
+    }
+
+    public void stopMoving() {
+        frontLeftDrive.setPower(0);
+        backLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        backRightDrive.setPower(0);
     }
 
     public void moveTime(double forward, double turn, double time, LinearOpMode opmode, Telemetry telemetry) {
