@@ -159,7 +159,18 @@ public class RedCraterCode extends LinearOpMode {
 
         robot.dropOffLander(this, telemetry);
         //drive to the sampling position
-        vpos.driveToPoint(-600,-600, this);
+        vpos.driveToPoint(-775,-775, this);  // look at the center mineral
+        if (sampling()) {
+            vpos.driveToPoint(-900,-900, this);
+        } else {
+            vpos.driveToPoint(-1020, -600, this);
+            if (sampling()) {
+                vpos.driveToPoint(-1200, -600, this);
+            } else {
+                vpos.driveToPoint(-600,-1020, this);
+                vpos.driveToPoint(-600,-1200, this);  // if it doesnt sence it on the others ram the thingy (if it doesnt sence it at all, we might as well ram it for a guaranteed 1/3 chance
+            }
+        }
         //do the sampling of the minerals
         //robot.sampling();
         //drive to the depot
@@ -318,6 +329,22 @@ public class RedCraterCode extends LinearOpMode {
         encoderDrive(DRIVE_SPEED,  10,  10, 5.0);     //backup
         encoderDrive(TURN_SPEED,   -5, 5, 4.0);         //straighten
         encoderDrive(DRIVE_SPEED,-30,-30,5);            //back up to crator
+    }
+
+    public boolean sampling() {
+        //Find the cube
+        telemetry.addData("Red", robot.sensorColor.red());
+        telemetry.addData("Green", robot.sensorColor.green());
+        telemetry.addData("Blue ", robot.sensorColor.blue());
+        robot.sensorColor.enableLed(true);
+        if ((robot.sensorColor.red() + robot.sensorColor.green() + robot.sensorColor.blue() >75)){
+            telemetry.addData("Cube", "Found Cube");
+            telemetry.update();
+            return true;
+        } else {
+            telemetry.update();
+            return false;
+        }
     }
 }
 

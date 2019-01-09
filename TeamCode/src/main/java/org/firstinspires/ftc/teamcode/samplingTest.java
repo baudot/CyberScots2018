@@ -13,12 +13,12 @@ public class samplingTest extends LinearOpMode {
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
     HardwareRagbotNoArm robot = new HardwareRagbotNoArm();
-    static final double left_whip_up_pos = 0.2;
-    static final double left_whip_side_pos = 0.4;
-    static final double center_whip_up_pos = 0.4;
-    static final double center_whip_side_pos = 0.6;
-    static final double right_whip_up_pos = 0.6;
-    static final double right_whip_side_pos = 0.8;
+    static final double left_whip_up_pos = 0;
+    static final double left_whip_side_pos = 0.15;
+    static final double center_whip_up_pos = 0;
+    static final double center_whip_side_pos = 0.3;
+    static final double right_whip_up_pos = 0;
+    static final double right_whip_side_pos = 0.4;
 
     public void sampling() {
         //Find the cube
