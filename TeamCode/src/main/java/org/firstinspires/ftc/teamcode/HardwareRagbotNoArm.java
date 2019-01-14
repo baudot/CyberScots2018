@@ -243,17 +243,19 @@ public class HardwareRagbotNoArm
         //  sleep(250);   // optional pause after each move
     }
 
-
+    public void encoder1Foot(LinearOpMode opmode) {
+        encoderDrive(.5, 12, 12, 10, opmode);
+    }
 
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS,
                              LinearOpMode opmode) {
-        int newFrontLeftTarget;
+        //int newFrontLeftTarget;
         int newFrontRightTarget;
 
         int newBackLeftTarget;
-        int newBackRightTarget;
+        //int newBackRightTarget;
 
         // Ensure that the opmode is still active
 
@@ -292,6 +294,7 @@ public class HardwareRagbotNoArm
         // However, if you require that BOTH motors have finished their moves before the robot continues
         // onto the next step, use (isBusy() || isBusy()) in the loop test.
         while (opmode.opModeIsActive() &&
+                encoderTimer.seconds() < timeoutS &&
                 (leftInches >= 0 || backLeftDrive.getCurrentPosition() > newBackLeftTarget) &&
                 (leftInches < 0 || backLeftDrive.getCurrentPosition() < newBackLeftTarget) &&
                 (rightInches >= 0 || frontRightDrive.getCurrentPosition() > newFrontRightTarget) &&
