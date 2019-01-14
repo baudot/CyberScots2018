@@ -338,11 +338,12 @@ public class VuforiaPos
                 //startLocRot.rotation.firstAngle = (startLocRot.rotation.firstAngle + lastlr.rotation.firstAngle) / 2;
                 //startLocRot.rotation.secondAngle = (startLocRot.rotation.secondAngle + lastlr.rotation.secondAngle) / 2;
                 //startLocRot.rotation.thirdAngle = (startLocRot.rotation.thirdAngle + lastlr.rotation.thirdAngle) / 2;
+                robot.stopMoving();
             }else {
                 telemetry.addLine("OOOOOF: No poster found!");
                 telemetry.update();
                 averageTime.reset();
-                robot.moveTime(0.0, -0.5, 1000, opmode, telemetry);
+                robot.move(0.0, -0.5);
             }
         }
 

@@ -293,21 +293,25 @@ public class HardwareRagbotNoArm
         // always end the motion as soon as possible.
         // However, if you require that BOTH motors have finished their moves before the robot continues
         // onto the next step, use (isBusy() || isBusy()) in the loop test.
+
+        boolean leftGoingForward = leftInches >= 0;
+        boolean rightGoingForward = rightInches >= 0;
+
         while (opmode.opModeIsActive() &&
                 encoderTimer.seconds() < timeoutS &&
-                (leftInches >= 0 || backLeftDrive.getCurrentPosition() > newBackLeftTarget) &&
-                (leftInches < 0 || backLeftDrive.getCurrentPosition() < newBackLeftTarget) &&
-                (rightInches >= 0 || frontRightDrive.getCurrentPosition() > newFrontRightTarget) &&
-                (rightInches < 0 || frontRightDrive.getCurrentPosition() < newFrontRightTarget)) {
+                (leftGoingForward && backLeftDrive.getCurrentPosition() < newBackLeftTarget) &&
+                (!leftGoingForward || backLeftDrive.getCurrentPosition() > newBackLeftTarget) &&
+                (rightGoingForward || frontRightDrive.getCurrentPosition() < newFrontRightTarget) &&
+                (!rightGoingForward || frontRightDrive.getCurrentPosition() > newFrontRightTarget)) {
 
-            if ((leftInches < 0 || backLeftDrive.getCurrentPosition() > newBackLeftTarget) &&
-                    (leftInches >= 0 || backLeftDrive.getCurrentPosition() < newBackLeftTarget)) {
+            if ((leftGoingForward && backLeftDrive.getCurrentPosition() >= newBackLeftTarget) ||
+                    (!leftGoingForward && backLeftDrive.getCurrentPosition() <= newBackLeftTarget)) {
                 frontLeftDrive.setPower(0);
                 backLeftDrive.setPower(0);
             }
 
-            if ((rightInches < 0 || frontRightDrive.getCurrentPosition() > newFrontRightTarget) &&
-                    (rightInches > 0 || frontRightDrive.getCurrentPosition() < newFrontRightTarget)) {
+            if ((rightGoingForward && frontRightDrive.getCurrentPosition() >= newFrontRightTarget) ||
+                    (!rightGoingForward && frontRightDrive.getCurrentPosition() <= newFrontRightTarget)) {
                 frontRightDrive.setPower(0);
                 backRightDrive.setPower(0);
             }
