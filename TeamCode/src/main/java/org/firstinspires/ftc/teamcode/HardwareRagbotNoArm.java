@@ -244,41 +244,29 @@ public class HardwareRagbotNoArm
     }
 
     public void encoder1Foot(LinearOpMode opmode) {
-        encoderDrive(.5, 12, 12, 10, opmode);
+        encoderDrive(.2, 12, 12, 10, opmode);
     }
 
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS,
                              LinearOpMode opmode) {
-        //int newFrontLeftTarget;
         int newFrontRightTarget;
-
         int newBackLeftTarget;
-        //int newBackRightTarget;
-
-        // Ensure that the opmode is still active
 
         // Determine new target position, and jack to motor controller
-        //newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-
         newBackLeftTarget = backLeftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-        //newBackRightTarget = backRightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
 
-        /*frontLeftDrive.setTargetPosition(newFrontLeftTarget);
-        frontRightDrive.setTargetPosition(newFrontRightTarget);
-        backLeftDrive.setTargetPosition(newBackLeftTarget);
-        backRightDrive.setTargetPosition(newBackRightTarget);*/
-
-        // Turn On RUN_TO_POSITION
         frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        double leftSpeed = (leftInches < 0) ? -speed : speed;
-        double rightSpeed = (rightInches < 0) ? -speed : speed;
+        double leftSpeed = (leftInches >= 0) ? -speed : speed;
+        double rightSpeed = (rightInches >= 0) ? -speed : speed;
 
         // reset the timeout time and start motion.
         encoderTimer.reset();
@@ -299,35 +287,31 @@ public class HardwareRagbotNoArm
 
         while (opmode.opModeIsActive() &&
                 encoderTimer.seconds() < timeoutS &&
-                (leftGoingForward && backLeftDrive.getCurrentPosition() < newBackLeftTarget) &&
-                (!leftGoingForward || backLeftDrive.getCurrentPosition() > newBackLeftTarget) &&
-                (rightGoingForward || frontRightDrive.getCurrentPosition() < newFrontRightTarget) &&
-                (!rightGoingForward || frontRightDrive.getCurrentPosition() > newFrontRightTarget)) {
+                (Math.abs(backLeftDrive.getCurrentPosition()) < Math.abs(newBackLeftTarget)) &&
+                (Math.abs(frontRightDrive.getCurrentPosition()) < Math.abs(newFrontRightTarget))) {
 
-            if ((leftGoingForward && backLeftDrive.getCurrentPosition() >= newBackLeftTarget) ||
-                    (!leftGoingForward && backLeftDrive.getCurrentPosition() <= newBackLeftTarget)) {
-                frontLeftDrive.setPower(0);
-                backLeftDrive.setPower(0);
+            opmode.telemetry.addData("Left target: ", newBackLeftTarget);
+            opmode.telemetry.addData("Left Pos: ", backLeftDrive.getCurrentPosition());
+            opmode.telemetry.addLine();
+            opmode.telemetry.addData("Right target: ", newFrontRightTarget);
+            opmode.telemetry.addData("Right Pos: ", frontRightDrive.getCurrentPosition());
+
+            if ((Math.abs(backLeftDrive.getCurrentPosition()) > Math.abs(newBackLeftTarget))) {
+                opmode.telemetry.addLine("Left wheels reached target");
+                opmode.telemetry.addData("leftGoingForward: ", leftGoingForward);
+            }
+            if (Math.abs(frontRightDrive.getCurrentPosition()) > Math.abs(newFrontRightTarget)) {
+                opmode.telemetry.addLine("Right wheels reached target");
+                opmode.telemetry.addData("rightGoingForward: ", rightGoingForward);
             }
 
-            if ((rightGoingForward && frontRightDrive.getCurrentPosition() >= newFrontRightTarget) ||
-                    (!rightGoingForward && frontRightDrive.getCurrentPosition() <= newFrontRightTarget)) {
-                frontRightDrive.setPower(0);
-                backRightDrive.setPower(0);
-            }
+            opmode.telemetry.update();
         }
-
         // Stop all motion;
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
         backLeftDrive.setPower(0);
         backRightDrive.setPower(0);
-
-        // Turn off RUN_TO_POSITION
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //  sleep(250);   // optional pause after each move
     }
