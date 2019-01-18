@@ -456,8 +456,8 @@ public class HardwareRagbotNoArm
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors //Directions of motors to prevent IT SUCKS JACK HERE
         armL.setDirection(DcMotor.Direction.FORWARD);
         armR.setDirection(DcMotor.Direction.REVERSE);
-        //shoulder.setDirection(DcMotor.Direction.FORWARD);
-       // elbow.setDirection(DcMotor.Direction.REVERSE);
+        shoulder.setDirection(DcMotor.Direction.FORWARD);
+        elbow.setDirection(DcMotor.Direction.REVERSE);
 
         //button.setMode(DigitalChannel.Mode.INPUT);
 
@@ -468,21 +468,21 @@ public class HardwareRagbotNoArm
         backRightDrive.setPower(0);
         armL.setPower(0);
         armR.setPower(0);
-        //shoulder.setPower(0);
-        //elbow.setPower(0);
+        shoulder.setPower(0);
+        elbow.setPower(0);
 
         // Set all motors to run with encoders.
         // May want to use RUN_WITHOUT_ENCODER if encoders are installed.
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //shoulder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        shoulder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        //shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
         // Initialize ALL installed servos.
