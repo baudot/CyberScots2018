@@ -90,6 +90,9 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
     int shoulderPos = 0;
     //int elbowPos = 0;  "elbow" has no encoder"
 
+    double mineralServoPos = 0;
+    double MINERAL_SERVO_SPEED = .1;
+
     double motorPower = 0; //Power to the arm motor
 
     //boolean clawButtonWasPressed = false;
@@ -155,7 +158,13 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            robot.shoulder.setTargetPosition(shoulderPos);
+            if (!(shoulderPos < robot.shoulder.getTargetPosition() && shoulder_endstop.getState())) { // The motor ISN'T going into the button
+                robot.shoulder.setTargetPosition(shoulderPos);
+            }
+
+            robot.mineralCollector.setPosition(mineralServoPos);
+
+            mineralServoPos += (gamepad1.dpad_up ? 0 : MINERAL_SERVO_SPEED) - (gamepad1.dpad_down ? 0 : MINERAL_SERVO_SPEED);
 
             telemetry.addData("Shoulder target Pos: ", shoulderPos);
             telemetry.addData("Shoulder actual Pos: ", robot.shoulder.getCurrentPosition());
@@ -185,7 +194,7 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
             }
 
             //robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
-            robot.shoulder.setPower(0.1);
+            robot.shoulder.setPower(0.5);
 
             if (!liftingModeIsActive) {
                 shoulderPos += gamepad1.right_trigger * MINERAL_ENCODER_SPEED - gamepad1.left_trigger * MINERAL_ENCODER_SPEED;
@@ -237,7 +246,7 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
 
             telemetry.addData("Left Speed: ", motorPowerL);
             telemetry.addData("Right Speed: ", motorPowerR);
-            if (shoulder_endstop.getState() == true) {
+            if (shoulder_endstop.getState()) {
                 telemetry.addData("Shoulder Endstop", "Is Not Pressed");
             } else {
                 telemetry.addData("Shoulder Endstop", "Is Pressed");

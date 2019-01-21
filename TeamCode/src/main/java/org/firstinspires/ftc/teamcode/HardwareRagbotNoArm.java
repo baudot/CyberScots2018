@@ -94,8 +94,9 @@ public class HardwareRagbotNoArm
     public Servo holder = null; //The team marker holder
     public Servo pusher = null; //The team marker pusher
     public ColorSensor sensorColor = null;
-    public Servo whipUp = null;
-    public Servo whipSide = null;
+    public Servo mineralCollector = null;
+   // public Servo whipUp = null;
+    //public Servo whipSide = null;
     //public Servo hook = null; //The servo that hooks on to the lander
 
     //public static final double MID_SERVO       =  0.5 ;
@@ -121,26 +122,26 @@ public class HardwareRagbotNoArm
     public void moveWhipTo(double pos) {
         whipTime.reset();
         while (whipTime.milliseconds() < WAIT_TIME) {
-            whipUp.setPosition(WHIP_UP_POSITION);
+            //whipUp.setPosition(WHIP_UP_POSITION);
         }
         whipTime.reset();
         while (whipTime.milliseconds() < WAIT_TIME) {
-            whipSide.setPosition(pos);
+            //whipSide.setPosition(pos);
         }
         whipTime.reset();
         while (whipTime.milliseconds() < WAIT_TIME) {
-            whipUp.setPosition(WHIP_DOWN_POSITION);
+            //whipUp.setPosition(WHIP_DOWN_POSITION);
         }
     }
 
     public void whack(double pos) {
         whipTime.reset();
         while (whipTime.milliseconds() < WAIT_TIME) {
-            whipSide.setPosition(pos + WHACK_DISTANCE);
+            //whipSide.setPosition(pos + WHACK_DISTANCE);
         }
         whipTime.reset();
         while (whipTime.milliseconds() < WAIT_TIME) {
-            whipUp.setPosition(WHIP_UP_POSITION);
+            //whipUp.setPosition(WHIP_UP_POSITION);
         }
     }
 
@@ -157,19 +158,19 @@ public class HardwareRagbotNoArm
         // Unfold the jewel whip
         whipTime.reset();
         while (whipTime.milliseconds() < WAIT_TIME) {
-            whipSide.setPosition(RIGHT_POSITION);
+            //whipSide.setPosition(RIGHT_POSITION);
         }
         whipTime.reset();
         while (whipTime.milliseconds() < WAIT_TIME) {
-            whipUp.setPosition(WHIP_UP_POSITION);
+            //whipUp.setPosition(WHIP_UP_POSITION);
         }
         whipTime.reset();
         while (whipTime.milliseconds() < WAIT_TIME) {
-            whipSide.setPosition(FAR_LEFT_POSITION);
+            //whipSide.setPosition(FAR_LEFT_POSITION);
         }
         whipTime.reset();
         while (whipTime.milliseconds() < WAIT_TIME) {
-            whipUp.setPosition(WHIP_DOWN_POSITION);
+            //whipUp.setPosition(WHIP_DOWN_POSITION);
         }
 
         if (cubeFound(colorSensor)) {
@@ -443,12 +444,10 @@ public class HardwareRagbotNoArm
         //button  = hardwareMap.get(DigitalChannel.class, "button");     //  Use generic form of device mapping
         //hook  = hardwareMap.get(Servo.class, "hook");// Set the motors from their configurations
         holder  = hardwareMap.get(Servo.class, "markerholder");// Set the motors from their configurations
-        whipUp  = hardwareMap.get(Servo.class, "whipUp");// Set the motors from their configurations
-        whipSide  = hardwareMap.get(Servo.class, "whipSide");// Set the motors from their configurations
-
+       // whipUp  = hardwareMap.get(Servo.class, "whipUp");// Set the motors from their configurations
+        //whipSide  = hardwareMap.get(Servo.class, "whipSide");// Set the motors from their configurations
+        mineralCollector = hardwareMap.get(Servo.class, "mineralCollector");
         //claw  = hardwareMap.get(Servo.class, "claw");// Set the motors from their configurations
-
-
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
