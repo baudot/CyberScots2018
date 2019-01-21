@@ -190,6 +190,11 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
             if (!liftingModeIsActive) {
                 shoulderPos += gamepad1.right_trigger * MINERAL_ENCODER_SPEED - gamepad1.left_trigger * MINERAL_ENCODER_SPEED;
                 robot.elbow.setPower((gamepad1.left_bumper ? 0 : WINDER_SPEED) - (gamepad1.right_bumper ? 0 : WINDER_SPEED));
+            } else {
+                if (gamepad1.right_trigger > 0.02 || gamepad1.left_trigger > 0.02 || gamepad1.right_bumper || gamepad1.left_bumper) {
+                    telemetry.addLine("Arm cannot move in lifting mode.");
+                    telemetry.addLine("Press 'a' to change mode.");
+                }
             }
 
             motorPower = Math.pow(gamepad1.right_stick_y, EXPONENT); //Arm is controlled by right stick y
