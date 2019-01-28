@@ -54,19 +54,9 @@ public class samplingTest extends LinearOpMode {
         telemetry.update();
     }
 
-    public void runOpMode() { //sorry about commenting this out, it was causing errors and we don't have a jewel whip anymore - Charlie
+    public void runOpMode() {
         robot.init(hardwareMap);
         waitForStart();
-        //robot.whipUp.setPosition(left_whip_up_pos);
-        // robot.whipSide.setPosition(left_whip_side_pos);
-        //sleep(7500);
-        //robot.whipUp.setPosition(center_whip_up_pos);
-        //robot.whipSide.setPosition(center_whip_side_pos);
-        //sleep(7500);
-        //robot.whipUp.setPosition(right_whip_up_pos);
-        //robot.whipSide.setPosition(right_whip_side_pos);
-        //sleep(7500);
-
         sampling();
     }
 }
