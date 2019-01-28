@@ -27,7 +27,17 @@ public class samplingTest extends LinearOpMode {
         telemetry.addData("Blue ", robot.sensorColor.blue());
         robot.sensorColor.enableLed(true);
         if ((robot.sensorColor.red() + robot.sensorColor.green() + robot.sensorColor.blue() > 75)){
-            telemetry.addData("Cube", "Found Cube");
+            telemetry.addData("Cube", "Found Cube");robot.frontLeftDrive.setPower(1);
+            robot.frontLeftDrive.setPower(1);
+            robot.frontRightDrive.setPower(1);
+            robot.backLeftDrive.setPower(1);
+            robot.backRightDrive.setPower(1);
+            sleep(250);
+            robot.frontLeftDrive.setPower(0);
+            robot.frontRightDrive.setPower(0);
+            robot.backLeftDrive.setPower(0);
+            robot.backRightDrive.setPower(0);
+
         } else {
             telemetry.addLine("CALABUNGA!!!");
             robot.frontLeftDrive.setPower(1);
@@ -39,6 +49,7 @@ public class samplingTest extends LinearOpMode {
             robot.frontRightDrive.setPower(0);
             robot.backLeftDrive.setPower(0);
             robot.backRightDrive.setPower(0);
+            telemetry.addLine("JACK_IS_YOUR_GOD!!!");
         }
         telemetry.update();
     }
@@ -56,8 +67,6 @@ public class samplingTest extends LinearOpMode {
         //robot.whipSide.setPosition(right_whip_side_pos);
         //sleep(7500);
 
-        while(opModeIsActive()) {
-            sampling();
-        }
+        sampling();
     }
 }
