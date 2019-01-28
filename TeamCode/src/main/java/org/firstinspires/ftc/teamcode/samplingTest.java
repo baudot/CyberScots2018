@@ -26,8 +26,19 @@ public class samplingTest extends LinearOpMode {
         telemetry.addData("Green", robot.sensorColor.green());
         telemetry.addData("Blue ", robot.sensorColor.blue());
         robot.sensorColor.enableLed(true);
-        if ((robot.sensorColor.red() + robot.sensorColor.green() + robot.sensorColor.blue() >75)){
+        if ((robot.sensorColor.red() + robot.sensorColor.green() + robot.sensorColor.blue() > 75)){
             telemetry.addData("Cube", "Found Cube");
+        } else {
+            telemetry.addLine("CALABUNGA!!!");
+            robot.frontLeftDrive.setPower(1);
+            robot.frontRightDrive.setPower(-1);
+            robot.backLeftDrive.setPower(1);
+            robot.backRightDrive.setPower(-1);
+            sleep(250);
+            robot.frontLeftDrive.setPower(0);
+            robot.frontRightDrive.setPower(0);
+            robot.backLeftDrive.setPower(0);
+            robot.backRightDrive.setPower(0);
         }
         telemetry.update();
     }
@@ -36,14 +47,14 @@ public class samplingTest extends LinearOpMode {
         robot.init(hardwareMap);
         waitForStart();
         //robot.whipUp.setPosition(left_whip_up_pos);
-       // robot.whipSide.setPosition(left_whip_side_pos);
-        sleep(7500);
+        // robot.whipSide.setPosition(left_whip_side_pos);
+        //sleep(7500);
         //robot.whipUp.setPosition(center_whip_up_pos);
         //robot.whipSide.setPosition(center_whip_side_pos);
-        sleep(7500);
+        //sleep(7500);
         //robot.whipUp.setPosition(right_whip_up_pos);
         //robot.whipSide.setPosition(right_whip_side_pos);
-        sleep(7500);
+        //sleep(7500);
 
         while(opModeIsActive()) {
             sampling();
