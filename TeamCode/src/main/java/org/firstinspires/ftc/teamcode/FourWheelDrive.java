@@ -72,8 +72,8 @@ public class FourWheelDrive extends LinearOpMode {
     HardwareRagbotNoArm         robot   = new HardwareRagbotNoArm();   // Use a Ragbot's hardware
 
     static final int EXPONENT = 3; //Exponent for exponential drive, higher = more fine control but harder to do medium speed
-    static final double     FORWARD_SPEED = 0.3; //How fast the robot moves forward, obviously
-    static final double     TURN_SPEED    = 0.5; //How fast the robot turns, obviously
+    static final double     FORWARD_SPEED = 0.9; //How fast the robot moves forward, obviously
+    static final double     TURN_SPEED    = 0.9; //How fast the robot turns, obviously
 
     static final double     LIFTING_FORWARD_SPEED = 0.1; //How fast the robot moves forward, obviously
     static final double     LIFTING_TURN_SPEED    = 0.1; //How fast the robot turns, obviously
@@ -312,17 +312,17 @@ public class FourWheelDrive extends LinearOpMode {
             }
 
             if (liftingModeIsActive) {
-                motorPowerL = Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
-                motorPowerR =  Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
+                motorPowerL =    Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
+                motorPowerR =   -Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
 
-                motorPowerL += Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
-                motorPowerR -= Math.pow(joystickTurn, EXPONENT)*TURN_SPEED; //Use speed variables and exponents
+                motorPowerL +=  -Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
+                motorPowerR -=   Math.pow(joystickTurn, EXPONENT)*TURN_SPEED; //Use speed variables and exponents
             }else {
-                motorPowerL = Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
-                motorPowerR =  Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
+                motorPowerL =   -Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
+                motorPowerR =    Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
 
-                motorPowerL += Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED;
-                motorPowerR -= Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED; //Use lifting mode speed variables and exponents
+                motorPowerL +=  -Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED;
+                motorPowerR -=   Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED; //Use lifting mode speed variables and exponents
             }
 
             double maxPower = Math.max(Math.abs(motorPowerL), Math.abs(motorPowerR));
