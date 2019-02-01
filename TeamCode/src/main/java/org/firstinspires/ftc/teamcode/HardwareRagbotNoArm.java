@@ -53,32 +53,30 @@ public class HardwareRagbotNoArm
     static final double CLAW_OPEN     =  0.25;     // Maximum rotational position of the hook
     static final double CLAW_CLOSED     = 0.35;     // Minimum rotational position of the hook
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
-    static final double     ARM_DRIVE_GEAR_REDUCTION    = 6.0 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.14159265);
-    static final double     COUNTS_PER_DEGREE         = (COUNTS_PER_MOTOR_REV * ARM_DRIVE_GEAR_REDUCTION)
-            / 360;
+    static final double COUNTS_PER_MOTOR_REV      = 1440 ;    // eg: TETRIX Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION      = 2.0 ;     // This is < 1.0 if geared UP
+    static final double ARM_DRIVE_GEAR_REDUCTION  = 6.0 ;     // This is < 1.0 if geared UP
+    static final double WHEEL_DIAMETER_INCHES     = 4.0 ;     // For figuring circumference
+    static final double COUNTS_PER_INCH           = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.14159265);
+    static final double COUNTS_PER_DEGREE         = (COUNTS_PER_MOTOR_REV * ARM_DRIVE_GEAR_REDUCTION) / 360;
 
-    static final double WHEEL_CIRCLE_RADIUS = 17; //The radius of the circle going around all of the wheels with the center of the robot in the middle
-    static final double FULL_CIRCLE_INCHES = WHEEL_CIRCLE_RADIUS * 2 * 3.14159265;
+    static final double WHEEL_CIRCLE_RADIUS       = 17; //The radius of the circle going around all of the wheels with the center of the robot in the middle
+    static final double FULL_CIRCLE_INCHES        = WHEEL_CIRCLE_RADIUS * 2 * 3.14159265;
 
-    static final double     DRIVE_SPEED             = 0.6;
-    static final double     TURN_SPEED              = 0.5;
+    static final double DRIVE_SPEED               = 0.6;
+    static final double TURN_SPEED                = 0.5;
 
-    static final double WAIT_TIME = 300;
+    static final double WAIT_TIME                 = 300;
 
-    static final double WHIP_UP_POSITION = 0;
-    static final double WHIP_DOWN_POSITION = 0.5;
-    static final double FAR_LEFT_POSITION= 0;
+    static final double WHIP_UP_POSITION          = 0;
+    static final double WHIP_DOWN_POSITION        = 0.5;
+    static final double FAR_LEFT_POSITION         = 0;
     //static final double FAR_LEFT_WHACK_POSITION = 0.2;
-    static final double LEFT_POSITION = 0.2;
+    static final double LEFT_POSITION             = 0.2;
     // private static final double LEFT_WHACK_POSITION = 0.4;
-    static final double RIGHT_POSITION = 0.4;
+    static final double RIGHT_POSITION            = 0.4;
 
-    static final double WHACK_DISTANCE = 0.1;
+    static final double WHACK_DISTANCE            = 0.1;
 
     /* Public OpMode members. */
     public DigitalChannel button = null;  // Device Object

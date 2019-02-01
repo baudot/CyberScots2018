@@ -31,7 +31,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -148,8 +147,6 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
         shoulder_endstop.setMode(DigitalChannel.Mode.INPUT);
         shoulderPos = robot.shoulder.getCurrentPosition();
         robot.shoulder.setTargetPosition(shoulderPos);
-        robot.shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.shoulder.setPower(0.5);
 
         /*telemetry.addData(">", "Press Start to use Zorb's awesome drive for the Ragbot" );
         telemetry.addData(">", "             _       _   " );
@@ -161,17 +158,13 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            robot.shoulder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            if (!shoulder_endstop.getState()) { // If the motor is pressed into the button, tell it to get off.
-                robot.shoulder.setTargetPosition(robot.shoulder.getTargetPosition()+10);
-                robot.shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.shoulder.setPower(0.5);
-                telemetry.addLine("Endstop hit; correcting.");
-
-            }
+            //if (!(shoulderPos < robot.shoulder.getTargetPosition() && !shoulder_endstop.getState())) { // The motor ISN'T going into the button
+                robot.shoulder.setTargetPosition(shoulderPos);
+           // }
 
             robot.mineralCollector.setPosition(mineralServoPos);
-            mineralServoPos += (gamepad1.dpad_up ? 0 : MINERAL_SERVO_SPEED) - (gamepad1.dpad_down ? 0 : MINERAL_SERVO_SPEED);
+
+            mineralServoPos = (gamepad1.dpad_up ? 1 : 0) + (gamepad1.dpad_down ? -1 : 0);//+= (gamepad1.dpad_up ? 0 : MINERAL_SERVO_SPEED) - (gamepad1.dpad_down ? 0 : MINERAL_SERVO_SPEED);
 
             telemetry.addData("Shoulder target Pos: ", shoulderPos);
             telemetry.addData("Shoulder actual Pos: ", robot.shoulder.getCurrentPosition());
@@ -200,16 +193,18 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
                 robot.armR.setPower(motorPower); //Move the arm based on the joystick
             }
 
+            //robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
+            robot.shoulder.setPower(0.5);
 
             //if (!liftingModeIsActive) {
                 shoulderPos += gamepad1.right_trigger * MINERAL_ENCODER_SPEED - gamepad1.left_trigger * MINERAL_ENCODER_SPEED;
                 robot.elbow.setPower((gamepad1.left_bumper ? 0 : WINDER_SPEED) - (gamepad1.right_bumper ? 0 : WINDER_SPEED));
             //} else {
             //    if (gamepad1.right_trigger > 0.02 || gamepad1.left_trigger > 0.02 || gamepad1.right_bumper || gamepad1.left_bumper) {
-            //        telemetry.addLine("Arm cannot move in lifting mode.");
+             //       telemetry.addLine("Arm cannot move in lifting mode.");
             //        telemetry.addLine("Press 'a' to change mode.");
             //    }
-            //}
+           // }
 
             motorPower = Math.pow(gamepad1.right_stick_y, EXPONENT); //Arm is controlled by right stick y
 
