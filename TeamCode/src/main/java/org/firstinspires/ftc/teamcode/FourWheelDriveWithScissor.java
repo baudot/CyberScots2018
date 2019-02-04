@@ -65,15 +65,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class FourWheelDriveWithScissor extends LinearOpMode {
     // Define class members
 
-    HardwareRagbotNoArm         robot   = new HardwareRagbotNoArm();   // Use a Ragbot's hardware
+    HardwareRagbotNoArm robot = new HardwareRagbotNoArm();   // Use a Ragbot's hardware
 
     static final int EXPONENT = 3; //Exponent for exponential drive, higher = more fine control but harder to do medium speed
-    static final double     FORWARD_SPEED = 0.3; //How fast the robot moves forward, obviously
-    static final double     TURN_SPEED    = 0.5; //How fast the robot turns, obviously
+    static final double FORWARD_SPEED = 0.3; //How fast the robot moves forward, obviously
+    static final double TURN_SPEED = 0.5; //How fast the robot turns, obviously
 
-    static final double     LIFTING_FORWARD_SPEED = 0.1; //How fast the robot moves forward, obviously
-    static final double     LIFTING_TURN_SPEED    = 0.1; //How fast the robot turns, obviously
-
+    static final double LIFTING_FORWARD_SPEED = 0.1; //How fast the robot moves forward, obviously
+    static final double LIFTING_TURN_SPEED = 0.1; //How fast the robot turns, obviously
 
 
     static final double MINERAL_ARM_SPEED = .3;
@@ -82,7 +81,7 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
 
     static final long CYCLE_MS = 25; //Cycle time, in milliseconds, of the opmode. The input updates every cycle.
 
-    double  motorPowerL = 0;
+    double motorPowerL = 0;
     double motorPowerR = 0; //Power, from -1 to 1, to the left and right sides of the robot
     double joystickForward = 0;
     double joystickTurn = 0; //How much (from -1 to 1) the robot needs to turn or move
@@ -157,7 +156,7 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
         telemetry.update();*/
         waitForStart();
 
-        while(opModeIsActive()){
+        while (opModeIsActive()) {
             //if (!(shoulderPos < robot.shoulder.getTargetPosition() && !shoulder_endstop.getState())) { // The motor ISN'T going into the button
                 robot.shoulder.setTargetPosition(shoulderPos);
            // }
@@ -173,16 +172,16 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
                 liftingModeButtonWasPressed = true;
                 liftingModeIsActive = !liftingModeIsActive;
 
-            }else if (!gamepad1.a) {
+            } else if (!gamepad1.a) {
                 liftingModeButtonWasPressed = false;
             }
 
-           // telemetry.addLine(liftingModeIsActive ? "Driving Mode" : "Lifting Mode");
+            telemetry.addLine(liftingModeIsActive ? "Driving Mode" : "Lifting Mode");
 
             if (gamepad1.y && !lockArmWasPressed) {
                 lockArmWasPressed = true;
                 armLocked = !armLocked;
-            }else if (!gamepad1.y) {
+            } else if (!gamepad1.y) {
                 lockArmWasPressed = false;
             }
 
@@ -197,35 +196,35 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
             //robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
             robot.shoulder.setPower(1);
 
-            //if (!liftingModeIsActive) {
+            if (!liftingModeIsActive) {
                 shoulderPos += gamepad1.right_trigger * MINERAL_ENCODER_SPEED - gamepad1.left_trigger * MINERAL_ENCODER_SPEED;
                 robot.elbow.setPower((gamepad1.left_bumper ? 0 : WINDER_SPEED) - (gamepad1.right_bumper ? 0 : WINDER_SPEED));
-            //} else {
-            //    if (gamepad1.right_trigger > 0.02 || gamepad1.left_trigger > 0.02 || gamepad1.right_bumper || gamepad1.left_bumper) {
-             //       telemetry.addLine("Arm cannot move in lifting mode.");
-            //        telemetry.addLine("Press 'a' to change mode.");
-            //    }
-           // }
+                //} else {
+                //    if (gamepad1.right_trigger > 0.02 || gamepad1.left_trigger > 0.02 || gamepad1.right_bumper || gamepad1.left_bumper) {
+                //       telemetry.addLine("Arm cannot move in lifting mode.");
+                //        telemetry.addLine("Press 'a' to change mode.");
+                //    }
+                // }
 
-            motorPower = Math.pow(gamepad1.right_stick_y, EXPONENT); //Arm is controlled by right stick y
+                motorPower = Math.pow(gamepad1.right_stick_y, EXPONENT); //Arm is controlled by right stick y
 
-            if (Math.abs(motorPower) < 0.05) { //Dead zone so the arm doesn't just move a little bit always
-                motorPower = 0;
-            }
+                if (Math.abs(motorPower) < 0.05) { //Dead zone so the arm doesn't just move a little bit always
+                    motorPower = 0;
+                }
 
-            joystickForward = gamepad1.left_stick_y;
-            joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
+                joystickForward = gamepad1.left_stick_y;
+                joystickTurn = gamepad1.left_stick_x; //Set the turn and forward from the joystick
 
-            if (!liftingModeIsActive) {
-                joystickForward = -joystickForward;
-            }
+                if (!liftingModeIsActive) {
+                    joystickForward = -joystickForward;
+                }
 
-            if (Math.abs(joystickForward) < 0.01) {
-                joystickForward = 0;
-            }
-            if (Math.abs(joystickTurn) < 0.01) { //Dead zone
-                joystickTurn = 0;
-            }
+                if (Math.abs(joystickForward) < 0.01) {
+                    joystickForward = 0;
+                }
+                if (Math.abs(joystickTurn) < 0.01) { //Dead zone
+                    joystickTurn = 0;
+                }
 
             if (!liftingModeIsActive) {
                 telemetry.addLine("Driving mode");
@@ -241,30 +240,31 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
                 motorPowerR -= joystickTurn;//Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED; //Use lifting mode speed variables and exponents
             }
 
-            double maxPower = Math.max(Math.abs(motorPowerL), Math.abs(motorPowerR));
-            if (maxPower > 1) {
-                motorPowerL /= maxPower;
-                motorPowerR /= maxPower;
+                double maxPower = Math.max(Math.abs(motorPowerL), Math.abs(motorPowerR));
+                if (maxPower > 1) {
+                    motorPowerL /= maxPower;
+                    motorPowerR /= maxPower;
+                }
+
+                telemetry.addData("Left Speed: ", motorPowerL);
+                telemetry.addData("Right Speed: ", motorPowerR);
+                if (shoulder_endstop.getState()) {
+                    telemetry.addData("Shoulder Endstop", "Is Not Pressed");
+                } else {
+                    telemetry.addData("Shoulder Endstop", "Is Pressed");
+                }
+                telemetry.update();
+                robot.frontLeftDrive.setPower(motorPowerL);
+                robot.frontRightDrive.setPower(motorPowerR);
+                robot.backLeftDrive.setPower(motorPowerL);
+                robot.backRightDrive.setPower(motorPowerR); //Set the drive motor power
+                sleep(CYCLE_MS); //Delay until the next cycle
+                idle();
             }
 
-            //telemetry.addData("Left Speed: ", motorPowerL);
-            //telemetry.addData("Right Speed: ", motorPowerR);
-            if (shoulder_endstop.getState()) {
-                telemetry.addData("Shoulder Endstop", "Is Not Pressed");
-            } else {
-                telemetry.addData("Shoulder Endstop", "Is Pressed");
-            }
+            // Signal done;
+            telemetry.addData(">", "Done");
             telemetry.update();
-            robot.frontLeftDrive.setPower(motorPowerL);
-            robot.frontRightDrive.setPower(motorPowerR);
-            robot.backLeftDrive.setPower(motorPowerL);
-            robot.backRightDrive.setPower(motorPowerR); //Set the drive motor power
-            sleep(CYCLE_MS); //Delay until the next cycle
-            idle();
         }
-
-        // Signal done;
-        telemetry.addData(">", "Done");
-        telemetry.update();
     }
 }
