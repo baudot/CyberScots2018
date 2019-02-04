@@ -177,7 +177,7 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
                 liftingModeButtonWasPressed = false;
             }
 
-            telemetry.addLine(liftingModeIsActive ? "Driving Mode" : "Lifting Mode");
+           // telemetry.addLine(liftingModeIsActive ? "Driving Mode" : "Lifting Mode");
 
             if (gamepad1.y && !lockArmWasPressed) {
                 lockArmWasPressed = true;
@@ -188,13 +188,14 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
 
             if (armLocked) {
                 robot.antiOverheatLockArm();
+                telemetry.addLine("Arm Locked!");
             }else {
                 robot.armL.setPower(motorPower); //Move the arm based on the joystick
                 robot.armR.setPower(motorPower); //Move the arm based on the joystick
             }
 
             //robot.shoulder.setPower(gamepad1.right_trigger * MINERAL_ARM_SPEED - gamepad1.left_trigger * MINERAL_ARM_SPEED);
-            robot.shoulder.setPower(0.5);
+            robot.shoulder.setPower(1);
 
             //if (!liftingModeIsActive) {
                 shoulderPos += gamepad1.right_trigger * MINERAL_ENCODER_SPEED - gamepad1.left_trigger * MINERAL_ENCODER_SPEED;
@@ -226,16 +227,18 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
                 joystickTurn = 0;
             }
 
-            if (liftingModeIsActive) {
-                motorPowerL = Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
-                motorPowerR =  Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
-                motorPowerL += Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
-                motorPowerR -= Math.pow(joystickTurn, EXPONENT)*TURN_SPEED; //Use speed variables and exponents
+            if (!liftingModeIsActive) {
+                telemetry.addLine("Driving mode");
+                motorPowerL = joystickForward;//Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
+                motorPowerR =  joystickForward;//Math.pow(joystickForward, EXPONENT)*FORWARD_SPEED;
+                motorPowerL += joystickTurn;//Math.pow(joystickTurn, EXPONENT)*TURN_SPEED;
+                motorPowerR -= joystickTurn;//Math.pow(joystickTurn, EXPONENT)*TURN_SPEED; //Use speed variables and exponents
             }else {
-                motorPowerL = Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
-                motorPowerR =  Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
-                motorPowerL += Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED;
-                motorPowerR -= Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED; //Use lifting mode speed variables and exponents
+                telemetry.addLine("Lifting Mode");
+                motorPowerL = joystickForward;//Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
+                motorPowerR = joystickForward; //Math.pow(joystickForward, EXPONENT)*LIFTING_FORWARD_SPEED;
+                motorPowerL += joystickTurn;//Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED;
+                motorPowerR -= joystickTurn;//Math.pow(joystickTurn, EXPONENT)*LIFTING_TURN_SPEED; //Use lifting mode speed variables and exponents
             }
 
             double maxPower = Math.max(Math.abs(motorPowerL), Math.abs(motorPowerR));
@@ -244,8 +247,8 @@ public class FourWheelDriveWithScissor extends LinearOpMode {
                 motorPowerR /= maxPower;
             }
 
-            telemetry.addData("Left Speed: ", motorPowerL);
-            telemetry.addData("Right Speed: ", motorPowerR);
+            //telemetry.addData("Left Speed: ", motorPowerL);
+            //telemetry.addData("Right Speed: ", motorPowerR);
             if (shoulder_endstop.getState()) {
                 telemetry.addData("Shoulder Endstop", "Is Not Pressed");
             } else {

@@ -145,13 +145,13 @@ public class HardwareRagbotNoArm
 
     public void sampling() {
         // Find the cube
-        ColorSensor colorSensor;
-        colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
+        //ColorSensor colorSensor;
+        //colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
 
-        telemetry.addData("Red", colorSensor.red());
-        telemetry.addData("Green", colorSensor.green());
-        telemetry.addData("Blue ", colorSensor.blue());
-        colorSensor.enableLed(true);
+        //telemetry.addData("Red", colorSensor.red());
+        //telemetry.addData("Green", colorSensor.green());
+       // telemetry.addData("Blue ", colorSensor.blue());
+        //colorSensor.enableLed(true);
 
         // Unfold the jewel whip
         whipTime.reset();
@@ -171,7 +171,7 @@ public class HardwareRagbotNoArm
             //whipUp.setPosition(WHIP_DOWN_POSITION);
         }
 
-        if (cubeFound(colorSensor)) {
+        /*if (cubeFound(colorSensor)) {
             whack(FAR_LEFT_POSITION);
         } else {
             moveWhipTo(LEFT_POSITION);
@@ -183,7 +183,7 @@ public class HardwareRagbotNoArm
                     whack(RIGHT_POSITION);
                 }
             }
-        }
+        }*/
     }
 
     public void armDrive(double speed,
@@ -247,6 +247,88 @@ public class HardwareRagbotNoArm
     }
 
     public void encoderDrive(double speed,
+                             double leftInches, double rightInches,
+                             double timeoutS,
+                             LinearOpMode opmode) {
+        int newFrontLeftTarget;
+        int newFrontRightTarget;
+        int newBackLeftTarget;
+        int newBackRightTarget;
+
+        // Ensure that the opmode is still active
+        if (opmode.opModeIsActive()) {
+            frontLeftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+            frontRightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+            backLeftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+            backRightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors //Directions of motors to prevent IT SUCKS JACK HERE
+
+            // Determine new target position, and pass to motor controller
+            newFrontLeftTarget = frontLeftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newFrontRightTarget = frontRightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            newBackLeftTarget = backLeftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newBackRightTarget = backRightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            frontLeftDrive.setTargetPosition(newFrontLeftTarget);
+            frontRightDrive.setTargetPosition(newFrontRightTarget);
+            backLeftDrive.setTargetPosition(newBackLeftTarget);
+            backRightDrive.setTargetPosition(newBackRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            encoderTimer.reset();
+            frontLeftDrive.setPower(Math.abs(speed));
+            frontRightDrive.setPower(Math.abs(speed));
+            backLeftDrive.setPower(Math.abs(speed));
+            backRightDrive.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opmode.opModeIsActive() &&
+                    (encoderTimer.seconds() < timeoutS) &&
+                    (frontLeftDrive.isBusy() && frontRightDrive.isBusy())
+                    && (backLeftDrive.isBusy() && backRightDrive.isBusy())) {
+
+                // Display it for the driver.
+                opmode.telemetry.addData("Front Wheels ",  "Running to %7d :%7d", newFrontLeftTarget,  newFrontRightTarget);
+                opmode.telemetry.addData("Front Wheels ",  "Running at %7d :%7d",
+                        frontLeftDrive.getCurrentPosition(),
+                        frontRightDrive.getCurrentPosition());
+                opmode.telemetry.addData("Back Wheels ",  "Running to %7d :%7d", newBackLeftTarget,  newBackRightTarget);
+                opmode.telemetry.addData("Back Wheels ",  "Running at %7d :%7d",
+                        backLeftDrive.getCurrentPosition(),
+                        backRightDrive.getCurrentPosition());
+                opmode.telemetry.update();
+            }
+
+            // Stop all motion;
+            frontLeftDrive.setPower(0);
+            frontRightDrive.setPower(0);
+            backLeftDrive.setPower(0);
+            backRightDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
+            frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+            frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+            backLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+            backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors //Directions of motors to prevent IT SUCKS JACK HERE
+        }
+    }
+
+    public void encoderDriveTwoEncoders(double speed,
                              double leftInches, double rightInches,
                              double timeoutS,
                              LinearOpMode opmode) {
@@ -447,10 +529,7 @@ public class HardwareRagbotNoArm
         mineralCollector = hardwareMap.get(Servo.class, "mineralCollector");
         //claw  = hardwareMap.get(Servo.class, "claw");// Set the motors from their configurations
 
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors //Directions of motors to prevent IT SUCKS JACK HERE
+
         armL.setDirection(DcMotor.Direction.FORWARD);
         armR.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setDirection(DcMotor.Direction.FORWARD);
